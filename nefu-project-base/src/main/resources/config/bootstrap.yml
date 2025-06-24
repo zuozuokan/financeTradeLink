@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: nefu-base-service
+
+  cloud:
+    nacos:
+      config:
+        #服务器地址
+        server-addr: 49.235.115.6:8848
+        namespace: nefu-project-id
+        file-extension: yaml
+        group: DEV
+      discovery:
+        server-addr: ${spring.cloud.nacos.config.server-addr}
+        namespace: ${spring.cloud.nacos.config.namespace}
+        group: DEV
+
+  config:
+    import:
+      - optional:nacos:mysql.yaml?group=DEV&refresh=true
+      - optional:nacos:redis.yaml?group=DEV&refresh=true
+
+
+logging:
+  level:
+    org.springframework.cloud.bootstrap.config: debug
+    org.springframework.boot.context.config: debug
+

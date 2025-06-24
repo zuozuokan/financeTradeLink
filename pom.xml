@@ -18,6 +18,7 @@
         <module>nefu-project-admin</module>
         <module>nefu-project-bank</module>
         <module>nefu-project-expert</module>
+        <module>nefu-project-base</module>
     </modules>
 
     <parent>

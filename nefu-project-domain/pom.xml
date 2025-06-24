@@ -38,6 +38,11 @@
             <artifactId>druid-spring-boot-3-starter</artifactId>
             <version>${project.druid.version}</version>
         </dependency>
+<!--        雪花算法依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
     </dependencies>
 
 

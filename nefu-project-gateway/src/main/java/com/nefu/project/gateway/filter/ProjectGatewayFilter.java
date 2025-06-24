@@ -37,15 +37,16 @@ public class ProjectGatewayFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.debug("来到网关的全局过滤器中...");
         ServerHttpRequest request = exchange.getRequest(); // 请求
-        ServerHttpResponse response = exchange.getResponse(); //相应
+        ServerHttpResponse response = exchange.getResponse(); //响应
 
         String path = request.getURI().getPath();
         System.err.println("RequestUrl:" + request.getURI());
         System.err.println("path:" + path);
 
-        // 1. 获取请求地址，请求login() --放行
-        if (path.contains("api/user/login") || path.contains("v3/api-docs")) {
+        // 1. 获取请求地址，请求login() --放行，请求register() -- 放行
+        if (path.contains("api/login") || path.contains("api/register") || path.contains("v3/api-docs")) {
             // 放行
+            log.debug("已放行");
             return chain.filter(exchange);
         }
         // 2. 获取token值

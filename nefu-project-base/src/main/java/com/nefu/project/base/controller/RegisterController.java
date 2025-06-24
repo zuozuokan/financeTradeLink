@@ -25,7 +25,7 @@ public class RegisterController {
     public HttpResult register(@RequestBody User user) {
 
         if(iRegisterService.register(user)) {
-            return HttpResult.success(user);
+            return HttpResult.success("注册成功");
         }
         return HttpResult.failed("未知错误,注册失败");
     }

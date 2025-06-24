@@ -9,9 +9,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.nefu.project.common</groupId>
-    <artifactId>nefu-project-common</artifactId>
-    <description>项目的common模块</description>
+    <groupId>com.nefu.project.base</groupId>
+    <artifactId>nefu-project-base</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -27,9 +26,13 @@
             <artifactId>nefu-project-domain</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--        依赖项目的common-->
+        <dependency>
+            <groupId>com.nefu.project.common</groupId>
+            <artifactId>nefu-project-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
-
-
 
 </project>

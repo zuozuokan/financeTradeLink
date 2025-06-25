@@ -96,8 +96,10 @@ public class LoanApplicationController {
         return HttpResult.success(loanApplications);
     }
 
-    /**
-     * 获取单个贷款申请详情
+    /** 
+     * @description: 获取单个贷款申请详情 
+     * @param: [loanApplicationUuid] 
+     * @return: com.nefu.project.common.result.HttpResult<com.nefu.project.domain.entity.LoanApplication> 
      */
     @Operation(summary = "获取单个贷款申请详情")
     @GetMapping("/information")

@@ -37,9 +37,9 @@ public class LoginController {
     @SneakyThrows
     @Operation(summary = "用户登录")
     @PostMapping("/login")
-    public HttpResult login(String userName,String password){
+    public HttpResult login(String userName,String password,String role){
         // 传回的用户不为空
-        User user = iLoginService.login(userName,password);
+        User user = iLoginService.login(userName,password,role);
         // 生成一个token字符串
         String token = JWT.create()
                 .withClaim("uuid", user.getUserUuid()) // 用户名

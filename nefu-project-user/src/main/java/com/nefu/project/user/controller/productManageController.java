@@ -58,6 +58,7 @@ public class productManageController {
         return HttpResult.success(products);
     }
     @Operation(summary = "删除/下架商品")
+//    hahah
     @PostMapping("delete")
     public HttpResult deleteProduct(String Uuid){
         if( IProductManageService.deleteProductByUuid(Uuid)) {

@@ -64,9 +64,9 @@ public class RegisterServiceImpl implements IRegisterService {
                 .userUserName(userName)
                 .userPassword(newPassWord)
                 .userPhone(user.getUserPhone())
-                .userRole(user.getUserRole())
                 .userStatus(user.getUserStatus())
-                .userUuid(IdWorker.getIdStr())
+                .userRole(user.getUserRole())
+                .userUuid(IdWorker.getIdStr()) // 雪花算法生成uuid
                 .userCreateTime(new Date())
                 .userUpdateTime(new Date())
                 .userAmount(user.getUserAmount())

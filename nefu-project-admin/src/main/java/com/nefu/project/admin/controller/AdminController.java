@@ -3,15 +3,18 @@ package com.nefu.project.admin.controller;
 import com.nefu.project.admin.service.IAdminService;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
+import com.nefu.project.domain.entity.User;
 import io.swagger.v3.oas.annotations.OpenAPI31;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Objects;
 
 @Tag(name = "管理员接口")
@@ -23,9 +26,29 @@ public class AdminController {
     private IAdminService iAdminService;
 
     @SneakyThrows
+    @Operation(summary = "银行账号注册")
+    @PostMapping("/register-bank")
+    public HttpResult registerBank(String username,String password){
+        if (iAdminService.addBank(username,password)) {
+            return HttpResult.success("银行该账户注册成功");
+        }
+        return HttpResult.failed("银行该账户注册失败");
+    }
+
+    @SneakyThrows
+    @Operation(summary = "专家账号注册")
+    @PostMapping("/register-expert")
+    public HttpResult registerExpert(String username,String password){
+        if (iAdminService.addExpert(username,password)) {
+            return HttpResult.success("专家该账户注册成功");
+        }
+        return HttpResult.failed("专家该账户注册失败");
+    }
+
+    @SneakyThrows
     @Operation(summary = "审核融资项目")
     @PostMapping("/checkLoan")
-    public HttpResult checkLoan(String loanUuid, String adminAdvice){
+    public HttpResult<String> checkLoan(String loanUuid, String adminAdvice){
         if (loanUuid.isEmpty()||adminAdvice.isEmpty()){
             return HttpResult.failed("该项目异常,参数不能为空");
         }
@@ -39,7 +62,7 @@ public class AdminController {
     @SneakyThrows
     @Operation(summary = "新增内容")
     @PostMapping("/add-knowlodge")
-    public HttpResult addKnowledge(Knowledge knowledge){
+    public HttpResult<String> addKnowledge(@RequestBody Knowledge knowledge){
         if (Objects.isNull(knowledge)) {
             return HttpResult.failed("内容对象不能为空");
         }
@@ -52,7 +75,7 @@ public class AdminController {
     @SneakyThrows
     @Operation(summary = "删除内容")
     @PostMapping("/delete-knowlodge")
-    public HttpResult deleteKnowledge(String knowledgeUuid){
+    public HttpResult<String> deleteKnowledge(String knowledgeUuid){
         if (Objects.isNull(knowledgeUuid)) {
             return HttpResult.failed("内容Id不能为空");
         }
@@ -65,13 +88,51 @@ public class AdminController {
     @SneakyThrows
     @Operation(summary = "更新内容")
     @PostMapping("/update-knowlodge")
-    public HttpResult updateKnowledge(Knowledge knowledge){
+    public HttpResult<String> updateKnowledge(@RequestBody Knowledge knowledge){
         if (Objects.isNull(knowledge)) {
             return HttpResult.failed("内容对象不能为空");
         }
         if (iAdminService.updateKnowledge(knowledge))
             return HttpResult.success("更新成功");
         return HttpResult.failed("更新失败");
+    }
+
+    @SneakyThrows
+    @Operation(summary = "获取所有普通用户")
+    @PostMapping("/find-all-users")
+    public HttpResult<List<User>> findAllUsers(){
+        List<User> users = iAdminService.getAllUser();
+        return HttpResult.success(users);
+    }
+
+    @SneakyThrows
+    @Operation(summary = "获取所有银行用户")
+    @PostMapping("/find-all-banks")
+    public HttpResult<List<User>> findAllBanks(){
+        List<User> users = iAdminService.getAllBank();
+        return HttpResult.success(users);
+    }
+
+    @SneakyThrows
+    @Operation(summary = "获取所有专家用户")
+    @PostMapping("/find-all-experts")
+    public HttpResult<List<User>> findAllExperts(){
+        List<User> users = iAdminService.getAllExpert();
+        return HttpResult.success(users);
+    }
+
+
+    @SneakyThrows
+    @Operation(summary = "操作用户")
+    @PostMapping("/operation-user")
+    public HttpResult<String> operationUser(String userUuid,String status){
+
+        if (iAdminService.operationUser(userUuid,status)) {
+            return HttpResult.success("操作成功");
+        }
+
+        return HttpResult.failed("操作失败");
+
     }
 
 

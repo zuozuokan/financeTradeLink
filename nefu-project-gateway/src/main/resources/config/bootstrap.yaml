@@ -40,14 +40,23 @@ spring:
             - Path=/project-user/**
           filters:
             - StripPrefix=1
-#          基本注册
-        - id: nefu-base1-id
+#          基本微服务
+        - id: nefu-base-id
           uri: lb://nefu-base-service
           predicates:
             - Path=/project-base/**
           filters:
             - StripPrefix=1
+#            管理员微服务
+        - id: nefu-admin-id
+          uri: lb://nefu-admin-service
+          predicates:
+            - Path=/project-base/**
+          filters:
+            - StripPrefix=1
+      ##临时环境
 
+      ##临时环境
 
   config:
     import:

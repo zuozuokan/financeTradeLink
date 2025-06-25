@@ -24,6 +24,9 @@ import java.util.Date;
 @TableName("user_tab")
 public class User {
 
+    // 管理员数量
+    public static final int ADMIN_NUM = 5;
+
     //枚举类型Role
     public enum Role {
         ADMIN,

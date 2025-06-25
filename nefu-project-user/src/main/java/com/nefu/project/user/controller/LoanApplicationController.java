@@ -55,7 +55,7 @@ public class LoanApplicationController {
     }
 
     /**
-     * 更新贷款申请还款计划
+     * 更新贷款还款计划
      */
     @Operation(summary = "更新贷款申请还款计划")
     @PostMapping("update/repay-plan")

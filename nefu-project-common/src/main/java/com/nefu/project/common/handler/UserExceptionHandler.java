@@ -1,6 +1,7 @@
 package com.nefu.project.common.handler;
 
 
+import com.nefu.project.common.exception.user.LoanApplicationException;
 import com.nefu.project.common.exception.user.UserException;
 import com.nefu.project.common.result.HttpResult;
 import lombok.extern.slf4j.Slf4j;
@@ -21,4 +22,11 @@ public class UserExceptionHandler{
         return HttpResult.failed(e.getMessage());
     }
 
+    /**
+     * 融资模块的错误
+     */
+    @ExceptionHandler(LoanApplicationException.class)
+    public HttpResult<String> loanApplicationExceptionHandler(LoanApplicationException e){
+        return HttpResult.failed(e.getMessage());
+    }
 }

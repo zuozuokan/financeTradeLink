@@ -21,7 +21,7 @@ public class LoginServiceImpl implements ILoginService {
 
 
     @Override
-    public User login(String userName, String password) {
+    public User login(String userName, String password,String role) {
 
         // 校验用户名和密码
         if (userName.isEmpty() || Objects.isNull(userName)) {
@@ -34,6 +34,10 @@ public class LoginServiceImpl implements ILoginService {
         );
         if (Objects.isNull(user)) {
             throw new UserException("用户不存在");
+        }
+        // 判断角色
+        if (!user.getUserRole().equals(role)) {
+            throw new UserException("用户角色或账号密码错误");
         }
         String cpass = SmUtil.sm3(password);
         if (!cpass.equals(user.getUserPassword())) {

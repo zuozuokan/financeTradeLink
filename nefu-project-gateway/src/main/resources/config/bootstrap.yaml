@@ -12,7 +12,6 @@ spring:
     nacos:
 #      服务配置
       config:
-#        好的好的
 #        enabled: off
         server-addr: 49.235.115.6:8848
         namespace: nefu-project-id

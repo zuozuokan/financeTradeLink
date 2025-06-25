@@ -1,0 +1,71 @@
+spring:
+#  防止主配置中的web依赖错误
+  main:
+    web-application-type: reactive
+
+  application:
+    name: nefu-gateway-service
+
+
+
+  cloud:
+    nacos:
+#      服务配置
+      config:
+#        enabled: off
+        server-addr: 49.235.115.6:8848
+        namespace: nefu-project-id
+        file-extension: yaml
+        group: DEV
+#     服务治理
+      discovery:
+        group: DEV
+        server-addr: 49.235.115.6:8848
+        namespace: nefu-project-id
+        register-enabled: true
+
+    gateway:
+#      服务发现
+      discovery:
+        locator:
+          enabled: true
+#        路由
+      routes:
+#        路由的唯一id,名称自定义
+        - id: nefu-user-id
+#          lb:loadbalance(负载均衡)
+#          nefu-user-service微服务名称
+          uri: lb://nefu-user-service
+          predicates:
+            - Path=/project-user/**
+          filters:
+            - StripPrefix=1
+#          基本注册
+        - id: nefu-base1-id
+          uri: lb://nefu-base-service
+          predicates:
+            - Path=/project-base/**
+          filters:
+            - StripPrefix=1
+
+
+  config:
+    import:
+      - optional:nacos:mysql.yaml?group=DEV&refresh=true
+      - optional:nacos:redis.yaml?group=DEV&refresh=true
+########  其他路由
+
+
+#网关配置
+knife4j:
+  gateway:
+    discover:
+      version: openapi3
+      enabled: true
+
+    strategy: discover
+    enabled: true
+
+
+
+

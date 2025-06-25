@@ -22,6 +22,7 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public User login(String userName, String password) {
+
         // 校验用户名和密码
         if (userName.isEmpty() || Objects.isNull(userName)) {
             throw new UserException("用户名不能为空");

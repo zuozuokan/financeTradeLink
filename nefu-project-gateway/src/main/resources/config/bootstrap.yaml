@@ -41,7 +41,7 @@ spring:
           filters:
             - StripPrefix=1
 #          基本注册
-        - id: nefu-base-id
+        - id: nefu-base1-id
           uri: lb://nefu-base-service
           predicates:
             - Path=/project-base/**

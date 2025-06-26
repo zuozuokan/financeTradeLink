@@ -14,7 +14,9 @@ import java.util.Objects;
 
 public class JwtUtil {
 
+
     public static final String SALT = "project_11_group";
+
 
     // 验证 token 是否合法
     public static boolean isTokenValid(String token) {

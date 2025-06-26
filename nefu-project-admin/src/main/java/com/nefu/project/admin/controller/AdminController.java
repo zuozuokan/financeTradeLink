@@ -16,10 +16,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -110,7 +107,7 @@ public class AdminController {
 
     @SneakyThrows
     @Operation(summary = "获取所有普通用户")
-    @PostMapping("/find-all-users")
+    @GetMapping("/find-all-users")
     public HttpResult<List<User>> findAllUsers(){
         List<User> users = iAdminService.getAllUser();
         return HttpResult.success(users);
@@ -118,7 +115,7 @@ public class AdminController {
 
     @SneakyThrows
     @Operation(summary = "获取所有银行用户")
-    @PostMapping("/find-all-banks")
+    @GetMapping("/find-all-banks")
     public HttpResult<List<User>> findAllBanks(){
         List<User> users = iAdminService.getAllBank();
         return HttpResult.success(users);
@@ -126,7 +123,7 @@ public class AdminController {
 
     @SneakyThrows
     @Operation(summary = "获取所有专家用户")
-    @PostMapping("/find-all-experts")
+    @GetMapping("/find-all-experts")
     public HttpResult<List<User>> findAllExperts(){
         List<User> users = iAdminService.getAllExpert();
         return HttpResult.success(users);
@@ -137,27 +134,36 @@ public class AdminController {
     @Operation(summary = "操作用户")
     @PostMapping("/operation-user")
     public HttpResult<String> operationUser(String userUuid, String status) {
+        // 调用iAdminService的operationUser方法，传入userUuid和status，返回布尔值
         if (iAdminService.operationUser(userUuid, status)) {
 
             String jobName = "user_deletion_job_" + userUuid;
 
             // 情况 1：封禁或注销，创建/重启定时器
             if (status.equals("2") || status.equals("0")) {
+                // 创建一个Map，用于存储定时器的数据
                 Map<String, Object> jobData = new HashMap<>();
+                // 将userUuid放入Map中
                 jobData.put("userUuid", userUuid);
+                // 调用scheduledDeletionConfig的scheduleJobWithDelay方法，传入UserDelayedTaskJob类，jobName，15552000（30天）和jobData，创建/重启定时器
                 scheduledDeletionConfig.scheduleJobWithDelay(UserDelayedTaskJob.class, jobName, 15552000, jobData);
+                // 打印日志，记录状态和userUuid
                 log.debug("状态为 {}，开始或重启定时删除任务，UUID: {}", status, userUuid);
             }
 
             // 情况 2：用户恢复为活跃，取消任务
             if (status.equals("1")) {
+                // 调用scheduledDeletionConfig的cancelScheduledJob方法，传入jobName，取消定时任务
                 scheduledDeletionConfig.cancelScheduledJob(jobName);
+                // 打印日志，记录userUuid
                 log.debug("用户已恢复活跃状态，取消定时任务，UUID: {}", userUuid);
             }
 
+            // 返回成功信息
             return HttpResult.success("用户账号状态变更成功");
         }
 
+        // 返回失败信息
         return HttpResult.failed("用户账号状态变更失败");
     }
 

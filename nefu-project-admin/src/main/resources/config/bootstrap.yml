@@ -3,6 +3,7 @@ spring:
   application:
     name: nefu-admin-service
 
+
   cloud:
     nacos:
       config:

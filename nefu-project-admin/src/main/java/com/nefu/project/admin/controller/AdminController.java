@@ -1,6 +1,9 @@
 package com.nefu.project.admin.controller;
 
+import com.nefu.project.admin.job.ScheduledDeletionConfig;
+import com.nefu.project.admin.job.UserDelayedTaskJob;
 import com.nefu.project.admin.service.IAdminService;
+import com.nefu.project.admin.service.impl.AdminServiceimpl;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
 import com.nefu.project.domain.entity.User;
@@ -8,22 +11,30 @@ import io.swagger.v3.oas.annotations.OpenAPI31;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Tag(name = "管理员接口")
 @RestController
+@Slf4j
 @RequestMapping("/api/admin")
 public class AdminController {
 
     @Autowired
     private IAdminService iAdminService;
+
+    @Autowired
+    private ScheduledDeletionConfig scheduledDeletionConfig;
+
 
     @SneakyThrows
     @Operation(summary = "银行账号注册")
@@ -125,15 +136,31 @@ public class AdminController {
     @SneakyThrows
     @Operation(summary = "操作用户")
     @PostMapping("/operation-user")
-    public HttpResult<String> operationUser(String userUuid,String status){
+    public HttpResult<String> operationUser(String userUuid, String status) {
+        if (iAdminService.operationUser(userUuid, status)) {
 
-        if (iAdminService.operationUser(userUuid,status)) {
-            return HttpResult.success("操作成功");
+            String jobName = "user_deletion_job_" + userUuid;
+
+            // 情况 1：封禁或注销，创建/重启定时器
+            if (status.equals("2") || status.equals("0")) {
+                Map<String, Object> jobData = new HashMap<>();
+                jobData.put("userUuid", userUuid);
+                scheduledDeletionConfig.scheduleJobWithDelay(UserDelayedTaskJob.class, jobName, 15552000, jobData);
+                log.debug("状态为 {}，开始或重启定时删除任务，UUID: {}", status, userUuid);
+            }
+
+            // 情况 2：用户恢复为活跃，取消任务
+            if (status.equals("1")) {
+                scheduledDeletionConfig.cancelScheduledJob(jobName);
+                log.debug("用户已恢复活跃状态，取消定时任务，UUID: {}", userUuid);
+            }
+
+            return HttpResult.success("用户账号状态变更成功");
         }
 
-        return HttpResult.failed("操作失败");
-
+        return HttpResult.failed("用户账号状态变更失败");
     }
+
 
 
 }

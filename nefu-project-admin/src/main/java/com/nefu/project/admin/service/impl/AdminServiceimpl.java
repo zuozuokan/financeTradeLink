@@ -16,6 +16,8 @@ import com.nefu.project.domain.entity.Knowledge;
 import com.nefu.project.domain.entity.LoanApplication;
 import com.nefu.project.domain.entity.User;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class AdminServiceimpl implements IAdminService {
+public class AdminServiceimpl implements IAdminService{
 
     @Autowired
     private IKnowledgeMapper iKnowledgeMapper;
@@ -40,6 +42,7 @@ public class AdminServiceimpl implements IAdminService {
 
     @Autowired
     private IUserMapper iUserMapper;
+
    
     /** 
      * @description: 更新管理员的管理意见 

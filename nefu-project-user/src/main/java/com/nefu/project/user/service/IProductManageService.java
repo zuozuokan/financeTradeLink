@@ -14,6 +14,7 @@ public interface IProductManageService {
     Product selectProductByUuid(String uuid);
     void updateProduct(Product product); //更新商品
     boolean deleteProductByUuid(String uuid);     //删除商品
-    boolean addProducts(Product product);//真正添加商品
-
+    boolean addProducts(Product product,String Uuid);//真正添加商品
+    boolean updateProducts(Product product);
+    List<Product> selectAllProductByCategory(String category);
 }

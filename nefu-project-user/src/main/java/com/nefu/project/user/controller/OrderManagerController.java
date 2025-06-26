@@ -25,41 +25,53 @@ public class OrderManagerController {
 
     @Operation(summary = "下单购买商品")
     @PostMapping("create")
-    public HttpResult create(String id,int amounts){
-        orderManageService.createOrder(id,amounts);
+    public HttpResult create(String ProductUuid,int amounts,String UserUuid){
+        orderManageService.createOrder(ProductUuid ,amounts,UserUuid);
         return HttpResult.success("购买成功");
     }
 
     @Operation(summary = "查看订单详情")
     @GetMapping("{id}")
-    public HttpResult getOrderFindByUuId(String id){
-        Order order = orderManageService.findById(id);
+    public HttpResult getOrderFindByUuId( @PathVariable("id") String Uuid){
+        Order order = orderManageService.findOrderByUuId(Uuid);
         if(order!=null){
             return HttpResult.success(order);
         }
          return  HttpResult.success(order);
     }
 
-    @Operation(summary = "获取特定订单详情")
+    @Operation(summary = "获取用户订单详情")
     @GetMapping("my")
-    public HttpResult getAllOrdersByToken(@RequestParam String token){
+    public HttpResult getAllOrdersByToken(String userUuid){
+        //@RequestParam String token
            List<Order> orders = new ArrayList<>();
-//       // if(orders)
-//        return HttpResult.success(orders);
         try
         {
-            // 1. 解析 token，获取 uuid
-            Algorithm algorithm = Algorithm.HMAC256("project_11_group"); // 替换为你的实际 SALT
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            DecodedJWT jwt = verifier.verify(token);
-            String uuid = jwt.getClaim("uuid").asString();
+            /**
+             *
+             *   // 1. 解析 token，获取 uuid
+             *             Algorithm algorithm = Algorithm.HMAC256("project_11_group"); // 替换为你的实际 SALT
+             *             JWTVerifier verifier = JWT.require(algorithm).build();
+             *             DecodedJWT jwt = verifier.verify(token);
+             *             String uuid = jwt.getClaim("uuid").asString();
+             */
+
             // 2. 查询订单列表（假设 order 表有 order_user_uuid 字段）
-          orders   = orderManageService.findByUuid(uuid);
+          orders   = orderManageService.findByUuid(userUuid);
         }
         catch (Exception e) {
-            return HttpResult.failed("Token无效或查询失败："+ e.getMessage());
+            return HttpResult.failed("查询失败："+ e.getMessage());
         }
         return HttpResult.success(orders);
+    }
+
+    @Operation(summary = "更新订单状态")
+    @PutMapping("update/orderUuid")
+    public HttpResult updateOrder( String Uuid, @RequestBody Order order){
+        if(orderManageService.updateOrder(Uuid,order)){
+            return HttpResult.success("更新成功");
+        }
+        return HttpResult.failed("更新失败");
     }
 
 

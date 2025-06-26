@@ -257,6 +257,9 @@ public class LoanApplicationImpl implements ILoanApplicationService {
 
         stringIsExist(loanApplicationUuid,"融资申请id为空");
         LoanApplication loanApplication = iLoanApplicationMapper.selectByUuid(loanApplicationUuid);
+        if (loanApplication==null) {
+            throw new LoanApplicationException("没有该融资申请");
+        }
         return iLoanApplicationMapper.selectById(loanApplication.getLoanApplicationId());
     }
 

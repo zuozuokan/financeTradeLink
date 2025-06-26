@@ -10,6 +10,7 @@ import com.nefu.project.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Tag(name = "登录接口")
 @RestController
+@Slf4j
 @RequestMapping("/api")
 public class LoginController {
 
@@ -50,7 +52,7 @@ public class LoginController {
         // 将用户信息存入redis
         ObjectMapper mapper = new ObjectMapper();
         String userStr = mapper.writeValueAsString(user);
-
+        log.debug(token);
         // 存入redis,加入随机时间,防止缓存雪崩
         Random random = new Random();
         stringRedisTemplate.opsForValue().set(token,userStr,30 + random.nextInt(10), TimeUnit.MINUTES);

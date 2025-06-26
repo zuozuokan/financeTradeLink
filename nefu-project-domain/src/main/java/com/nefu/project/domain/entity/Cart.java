@@ -37,7 +37,7 @@ public class Cart {
 
     @Schema(description = "商品数量")
     @TableField("cart_quantity")
-    private Integer cartQuantity;
+    private int cartQuantity;
 
     @Schema(description = "创建时间")
     @TableField("cart_created_time")

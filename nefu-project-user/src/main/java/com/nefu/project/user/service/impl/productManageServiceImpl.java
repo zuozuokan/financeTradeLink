@@ -79,10 +79,12 @@ public class productManageServiceImpl implements IProductManageService {
                 .productPrice(product.getProductPrice())
                 .productDescription(product.getProductDescription())
                 .productUserUuid(UserUuid)
+                .productImageUrl(product.getProductImageUrl())
                 .productCreatedTime(new Date())
                 .productUpdatedTime(new Date())
                 .build();
         try{
+            log.debug(product.getProductDescription());
             addProduct(products);
         }catch (Exception e){
             throw new ProductAddException("数据库添加失败");

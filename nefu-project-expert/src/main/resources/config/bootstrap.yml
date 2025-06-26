@@ -1,7 +1,8 @@
 spring:
 
   application:
-    name: nefu-tools-service
+    name: nefu-expert-service
+
 
   cloud:
     nacos:

@@ -1,16 +1,22 @@
 package com.nefu.project.user.controller;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.crypto.SmUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nefu.project.common.exception.productManager.ProductManagerException;
+import com.nefu.project.common.exception.productManager.UploadException;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Product;
 import com.nefu.project.user.service.IProductManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -23,14 +29,36 @@ import java.util.List;
 public class productManageController {
     @Autowired
     private IProductManageService IProductManageService;
-    @Operation(summary = "发布农产品")
-    @PostMapping("add")
-    public HttpResult addProduct(@RequestBody Product product,String userUuid){
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
+    @Operation(summary = "发布农产品样式图")
+    @PostMapping("addPictures")
+    @SneakyThrows
+    public HttpResult<String> addProductPicture(@RequestPart("file" ) MultipartFile file) {
+        String contentType = file.getContentType();
+        if(!contentType.contains("image")){
+            throw new UploadException("图片格式不正确，上传失败");
+        }
+        String encode = Base64.encode(file.getInputStream());
+        String nCode = SmUtil.sm3(encode);//摘要为64位
+
+        Boolean hasImage = stringRedisTemplate.hasKey(nCode);
+        if(hasImage) throw new UploadException("图片已经存在，上传失败");
+        stringRedisTemplate.opsForValue().set(nCode,encode);
+        return HttpResult.success(nCode);
+
+    }
+    @Operation(summary = "添加农产品")
+    @PostMapping("addProduct")
+    public HttpResult addProduct(@RequestBody Product product,String userUuid ){
+//         String nCode = stringRedisTemplate.opsForValue().get(product.getProductImageUrl());
+//         product.setProductImageUrl(nCode);
         if(!IProductManageService.addProducts(product,userUuid))
         {
             throw new ProductManagerException("添加失败");
         }
+
         return HttpResult.success(product);
 
     }

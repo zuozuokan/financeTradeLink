@@ -94,9 +94,9 @@ public class AdminServiceimpl implements IAdminService{
      */
     @Override
     public boolean deleteKnowledge(String knowledgeUuid) {
-        LambdaUpdateWrapper<Knowledge> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(Knowledge::getKnowledgeUuid,knowledgeUuid);
-        return iKnowledgeMapper.delete(lambdaUpdateWrapper) > 0;
+        LambdaQueryWrapper<Knowledge> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Knowledge::getKnowledgeUuid,knowledgeUuid);
+        return iKnowledgeMapper.delete(lambdaQueryWrapper) > 0;
     }
 
 
@@ -109,9 +109,10 @@ public class AdminServiceimpl implements IAdminService{
     @Override
     public boolean updateKnowledge(Knowledge knowledge) {
         // 先通过id把对象找出来，然后获取它的uuid
-        LambdaUpdateWrapper<Knowledge> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(Knowledge::getKnowledgeId,knowledge.getKnowledgeId());
-        Knowledge knowledgeSelected = iKnowledgeMapper.selectOne(lambdaUpdateWrapper);
+        LambdaQueryWrapper<Knowledge> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Knowledge::getKnowledgeId,knowledge.getKnowledgeId());
+        Knowledge knowledgeSelected = iKnowledgeMapper.selectOne(lambdaQueryWrapper);
+        // 不修改它的uuid
         String uuid = knowledgeSelected.getKnowledgeUuid();
         knowledge.setKnowledgeUuid(uuid);
 
@@ -191,9 +192,9 @@ public class AdminServiceimpl implements IAdminService{
         if (Objects.isNull(status) || Objects.isNull(userUuid)) {
             throw new AdminException("上传参数不能为空");
         }
-        LambdaUpdateWrapper<User> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(User::getUserUuid, userUuid);
-        User user = iUserMapper.selectOne(lambdaUpdateWrapper);
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getUserUuid, userUuid);
+        User user = iUserMapper.selectOne(lambdaQueryWrapper);
         if (Objects.isNull(user)) {
             throw new AdminException("用户不存在");
         }
@@ -201,6 +202,7 @@ public class AdminServiceimpl implements IAdminService{
         if (!(status.equals("0") || status.equals("1") || status.equals("2"))) {
             throw new AdminException("状态参数错误");
         }
+        LambdaUpdateWrapper<User> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(User::getUserUuid, userUuid)
                     .set(User::getUserStatus,status);
         try {

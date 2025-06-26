@@ -53,7 +53,7 @@ public class ProjectGatewayFilter implements GlobalFilter, Ordered {
         System.err.println("path:" + path);
 
         // 获取请求地址，请求login() --放行，请求register() -- 放行
-        if (path.contains("api/login") || path.contains("api/register") || path.contains("v3/api-docs")) {
+        if (path.contains("api/register-login") || path.contains("v3/api-docs")) {
             // 放行
             return chain.filter(exchange);
         }

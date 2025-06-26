@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nefu.project.common.exception.gateway.TokenVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,8 @@ import java.util.Objects;
 
 public class JwtUtil {
 
-    private static final String SALT = "project_11_group";
+    // 加盐
+    public static final String SALT = "project_11_group";
 
     // 验证 token 是否合法
     public static boolean isTokenValid(String token) {

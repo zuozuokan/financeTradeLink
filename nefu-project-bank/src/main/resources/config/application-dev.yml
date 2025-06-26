@@ -1,0 +1,15 @@
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+server:
+  port: 9984
+
+logging:
+  level:
+    com.nefu: debug
+
+
+

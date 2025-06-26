@@ -25,9 +25,9 @@ public class productManageController {
     private IProductManageService IProductManageService;
     @Operation(summary = "发布农产品")
     @PostMapping("add")
-    public HttpResult addProduct(@RequestBody Product product){
+    public HttpResult addProduct(@RequestBody Product product,String userUuid){
 
-        if(!IProductManageService.addProducts(product))
+        if(!IProductManageService.addProducts(product,userUuid))
         {
             throw new ProductManagerException("添加失败");
         }
@@ -35,8 +35,8 @@ public class productManageController {
 
     }
     @Operation(summary = "获取农产品")
-    @GetMapping("{id}")
-    public HttpResult getProductByUuid( @PathVariable("id") String uuid){
+    @GetMapping("{productUuid}")
+    public HttpResult getProductByUuid( @PathVariable("productUuid") String uuid){
         log.info("getProductByUuid:{}",uuid);
         Product product = IProductManageService.selectProductByUuid(uuid);
         log.info("商品:{}",product);
@@ -46,6 +46,16 @@ public class productManageController {
             throw new ProductManagerException("该商品库存为0");
         }
         return HttpResult.success(product);
+    }
+    @Operation(summary = "根据种类获取商品")
+    @GetMapping("category")
+    public HttpResult selectAllProductByCategory(String category){
+        log.info("selectAllProductByCategory:{}",category);
+        List<Product> products = IProductManageService.selectAllProductByCategory(category);
+        if(products == null || products.isEmpty()){//返回空列表是empty
+            return HttpResult.failed("该种类商品为空");
+        }
+        return HttpResult.success(products);
     }
     @Operation(summary = "获取农产品列表")
     @GetMapping("list")
@@ -60,11 +70,18 @@ public class productManageController {
     @Operation(summary = "删除/下架商品")
 //    hahah
     @PostMapping("delete")
-    public HttpResult deleteProduct(String Uuid){
-        if( IProductManageService.deleteProductByUuid(Uuid)) {
+    public HttpResult deleteProduct(String productUuid){
+        if( IProductManageService.deleteProductByUuid(productUuid)) {
             return HttpResult.success("删除成功");
         }
         else return  HttpResult.failed("删除失败");
+    }
+
+    @Operation(summary = "更新商品")
+    @PostMapping("update")
+    public HttpResult updateProduct(@RequestBody Product product){
+        IProductManageService.updateProducts(product);
+        return HttpResult.success(product);
     }
 
 

@@ -22,11 +22,4 @@ public class UserExceptionHandler{
         return HttpResult.failed(e.getMessage());
     }
 
-    /**
-     * 融资模块的错误
-     */
-    @ExceptionHandler(LoanApplicationException.class)
-    public HttpResult<String> loanApplicationExceptionHandler(LoanApplicationException e){
-        return HttpResult.failed(e.getMessage());
-    }
 }

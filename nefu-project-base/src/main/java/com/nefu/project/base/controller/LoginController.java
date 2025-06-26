@@ -5,12 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nefu.project.base.service.ILoginService;
 import com.nefu.project.common.result.HttpResult;
+import com.nefu.project.common.util.JwtUtil;
 import com.nefu.project.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +32,7 @@ public class LoginController {
     private StringRedisTemplate stringRedisTemplate;
 
     //数字签名
-    private final String SALT = "project_11_group";
+    private final String SALT = JwtUtil.SALT;
 
     @SneakyThrows
     @Operation(summary = "用户登录")
@@ -44,7 +44,7 @@ public class LoginController {
         String token = JWT.create()
                 .withClaim("uuid", user.getUserUuid()) // 用户名
                 .withClaim("role", user.getUserRole()) // 角色信息
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 过期时间(默认过期时间15分钟)
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 120)) // 过期时间(默认过期时间2小时)
                 .sign(Algorithm.HMAC256(SALT));  //数字签名
 
         // 将用户信息存入redis

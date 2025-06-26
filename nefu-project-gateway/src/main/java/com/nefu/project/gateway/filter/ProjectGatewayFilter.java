@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nefu.project.common.exception.gateway.TokenExpireException;
 import com.nefu.project.common.result.HttpResult;
+import com.nefu.project.common.util.JwtService;
 import com.nefu.project.common.util.JwtUtil;
 import com.nefu.project.domain.entity.User;
 import lombok.SneakyThrows;
@@ -38,7 +39,7 @@ public class ProjectGatewayFilter implements GlobalFilter, Ordered {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    private  JwtUtil jwtUtil;
+    private JwtService jwtService;
 
     @Override
     @SneakyThrows
@@ -89,7 +90,7 @@ public class ProjectGatewayFilter implements GlobalFilter, Ordered {
         }
 
         // 判断token是否过期
-        boolean isExpired =  jwtUtil.isTokenExpired(token);
+        boolean isExpired =  jwtService.isTokenExpired(token);
         if (isExpired) {
             // 异常抛出
             HttpResult<String> tokenExpired = HttpResult.failed("token已过期，请重新登录");

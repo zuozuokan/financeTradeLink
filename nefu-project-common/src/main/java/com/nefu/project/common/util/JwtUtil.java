@@ -12,39 +12,36 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.Objects;
 
-@Component
 public class JwtUtil {
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
 
-    // token加盐
-    public static final String SALT = "project_11_group";
+    private static final String SALT = "project_11_group";
 
+    // 验证 token 是否合法
     public static boolean isTokenValid(String token) {
         try {
-            JWT.require(Algorithm.HMAC256(SALT))
-                    .build()
-                    .verify(token);
-            return true;  // 验证通过
+            JWT.require(Algorithm.HMAC256(SALT)).build().verify(token);
+            return true;
         } catch (Exception e) {
-            return false; // 验证失败
+            return false;
         }
     }
 
+    // 提取 uuid
     public static String getUuidFromToken(String token) {
         return parseToken(token).getClaim("uuid").asString();
     }
 
+    // 提取 role
     public static String getRoleFromToken(String token) {
         return parseToken(token).getClaim("role").asString();
     }
 
-    public boolean isTokenExpired(String token) {
-
-        String userJson = stringRedisTemplate.opsForValue().get(token);
-        if (Objects.isNull(userJson)) {
-            return true;
+    // 解析 token
+    private static DecodedJWT parseToken(String token) {
+        try {
+            return JWT.require(Algorithm.HMAC256(SALT)).build().verify(token);
+        } catch (Exception e) {
+            throw new TokenVerificationException("Token非法：" + e.getMessage());
         }
-        return false;
     }
 }

@@ -40,6 +40,7 @@ public class LoginController {
     @Operation(summary = "用户登录")
     @PostMapping("/login")
     public HttpResult login(String username,String password,String role){
+
         // 传回的用户不为空
         User user = iLoginService.login(username,password,role);
         // 生成一个token字符串

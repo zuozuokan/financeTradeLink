@@ -55,7 +55,6 @@ public class Product {
     @Schema(description = "发布用户的ID")
     @TableField("product_user_uuid")
     private String productUserUuid;
-
     @Schema(description = "商品状态")
     @TableField("product_status")
     private String productStatus;

@@ -1,13 +1,14 @@
-package com.nefu.project.invest.service.Impl;
+package com.nefu.project.user.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nefu.project.domain.entity.InvestmentRecord;
 import com.nefu.project.domain.entity.LoanApplication;
-import com.nefu.project.invest.mapper.IInvestmentMapper;
-import com.nefu.project.invest.service.InvestmentService;
-import com.nefu.project.invest.mapper.ILoanApplicationMapper;
+import com.nefu.project.user.mapper.IInvestmentMapper;
+import com.nefu.project.user.mapper.ILoanApplicationMapper;
+import com.nefu.project.user.service.InvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,10 +65,15 @@ public class InvestmentServiceImpl implements InvestmentService {
     }
 
 
+
     @Override
     public Long submitInvestment(String investorUuid, String loanUuid, BigDecimal amount) {
+
+        // 雪花算法生成id
+        long id = IdUtil.getSnowflake(1, 1).nextId();
+
         InvestmentRecord record = InvestmentRecord.builder()
-                .investmentRecordUuid(UUID.randomUUID().toString())
+                .investmentRecordUuid(String.valueOf(id))
                 .investmentRecordInvestorUuid(investorUuid)
                 .investmentRecordLoanUuid(loanUuid)
                 .investmentRecordCreatedTime(new Date())

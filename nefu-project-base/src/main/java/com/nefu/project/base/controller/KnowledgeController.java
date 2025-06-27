@@ -1,10 +1,11 @@
 package com.nefu.project.base.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.nefu.project.base.service.KnowledgeService;
+import com.nefu.project.base.service.IKnowledgeService;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name="知识模块")
 @RestController
 @RequestMapping("/api/knowledge")
+@Slf4j
 public class KnowledgeController {
 
     @Autowired
-    private KnowledgeService service;
+    private IKnowledgeService service;
 
     @PostMapping
     public HttpResult<String> publish(@RequestBody Knowledge knowledge) {

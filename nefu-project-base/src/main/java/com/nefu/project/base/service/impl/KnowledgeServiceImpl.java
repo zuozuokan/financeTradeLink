@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nefu.project.base.mapper.IKnowledgeMapper;
-import com.nefu.project.base.service.KnowledgeService;
+import com.nefu.project.base.service.IKnowledgeService;
 import com.nefu.project.domain.entity.Knowledge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class KnowledgeServiceImpl implements KnowledgeService {
+public class KnowledgeServiceImpl implements IKnowledgeService {
 
     @Autowired
     private IKnowledgeMapper iKnowledgeMapper;

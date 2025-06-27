@@ -1,4 +1,4 @@
-package com.nefu.project.invest.mapper;
+package com.nefu.project.user.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nefu.project.domain.entity.InvestmentRecord;

@@ -1,4 +1,4 @@
-package com.nefu.project.invest.service;
+package com.nefu.project.user.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nefu.project.domain.entity.InvestmentRecord;

@@ -29,13 +29,16 @@ public class InitAdminRoleImpl implements IInitAdminRoleService {
         Long adminNums =  iUserMapper.selectCount(queryWrapper);
         if (adminNums < User.ADMIN_NUM) {
             log.debug("检测到管理员数量不足,管理员账号开始初始化...");
+
+            // 修改注册逻辑错误
             for (Long i = adminNums; i < User.ADMIN_NUM; i++) {
                 User user = new User();
-                user.setUserName("admin" + i);
-                user.setUserUserName("admin" + i);
+                user.setUserName("admin" + (i + 1));
+                user.setUserUserName("admin" + (i + 1 ));
                 user.setUserPassword("admin");
                 user.setUserRole(User.Role.ADMIN.toString());
                 try {
+                    log.info(user.getUserUserName() + "正在注册... ");
                     iRegisterService.register(user);
                 }catch (DbException e) {
                     throw new DbException("管理员初始化异常");

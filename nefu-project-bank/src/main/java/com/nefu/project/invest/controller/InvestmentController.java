@@ -49,6 +49,7 @@ public class InvestmentController {
 
 
     // 假设从token中解析用户UUID
+    // TODO：解析token
     private String parseInvestorUuidFromToken(String token) {
         // 生产环境应使用 JWT + 拦截器
         return "investor-uuid-from-token"; // 示例返回

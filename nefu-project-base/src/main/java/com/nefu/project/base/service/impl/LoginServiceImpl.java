@@ -21,16 +21,16 @@ public class LoginServiceImpl implements ILoginService {
 
 
     @Override
-    public User login(String userName, String password,String role) {
+    public User login(String username, String password,String role) {
 
         // 校验用户名和密码
-        if (Objects.isNull(userName) || userName.isEmpty()) {
+        if (Objects.isNull(username) || username.isEmpty()) {
             throw new UserException("用户名不能为空");
         }
         // 查找用户
         User user = iUserMapper.selectOne(
                 new LambdaQueryWrapper<User>()
-                        .eq(User::getUserUserName, userName)
+                        .eq(User::getUserUserName, username)
         );
         if (Objects.isNull(user)) {
             throw new UserException("用户不存在");

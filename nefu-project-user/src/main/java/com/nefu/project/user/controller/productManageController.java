@@ -41,6 +41,7 @@ public class productManageController {
             throw new UploadException("图片格式不正确，上传失败");
         }
         String encode = Base64.encode(file.getInputStream());
+    //    String base64Image = "data:" + contentType + ";base64," + encode;
         String nCode = SmUtil.sm3(encode);//摘要为64位
 
         Boolean hasImage = stringRedisTemplate.hasKey(nCode);

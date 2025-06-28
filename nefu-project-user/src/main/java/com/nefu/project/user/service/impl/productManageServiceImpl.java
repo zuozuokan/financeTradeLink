@@ -13,6 +13,7 @@ import com.nefu.project.user.service.IProductManageService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -69,8 +70,13 @@ public class productManageServiceImpl implements IProductManageService {
 
     }
     //添加商品
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Override
     public boolean addProducts(Product product,String UserUuid) {
+        // StringRedisTemplate redisTemplate;
+        String url= stringRedisTemplate.opsForValue().get(product.getProductImageUrl());
+        log.info("<UNK>url<UNK>"+url);
         Product products = Product.builder()
                 .productCategory(product.getProductCategory())
                 .productName(product.getProductName())
@@ -79,7 +85,7 @@ public class productManageServiceImpl implements IProductManageService {
                 .productPrice(product.getProductPrice())
                 .productDescription(product.getProductDescription())
                 .productUserUuid(UserUuid)
-                .productImageUrl(product.getProductImageUrl())
+                .productImageUrlTest(url)
                 .productCreatedTime(new Date())
                 .productUpdatedTime(new Date())
                 .build();

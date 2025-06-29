@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Order;
 
+
 import com.nefu.project.user.service.IOrderManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/order/")
 public class OrderManagerController {
+
     @Autowired
     private IOrderManageService orderManageService;
 

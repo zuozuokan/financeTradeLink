@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Service
+
 public interface IProductManageService {
     void addProduct(Product product); //添加农产品
 

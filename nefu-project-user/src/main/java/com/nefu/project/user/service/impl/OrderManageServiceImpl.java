@@ -15,6 +15,7 @@ import com.nefu.project.user.service.IOrderManageService;
 import com.nefu.project.user.service.IProductManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.util.List;
 public class OrderManageServiceImpl implements IOrderManageService {
     @Autowired
     private IOrderManageMapper orderManageMapper;
+
     @Autowired
     private IProductManageService productManageService;
 

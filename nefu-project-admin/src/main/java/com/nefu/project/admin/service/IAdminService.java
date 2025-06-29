@@ -1,5 +1,6 @@
 package com.nefu.project.admin.service;
 
+import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.Knowledge;
 import com.nefu.project.domain.entity.User;
 
@@ -39,7 +40,8 @@ public interface IAdminService {
     List<User> getAllUser();
     List<User> getAllBank();
     List<User> getAllExpert();
-
+    List<Expert> getExpertsInfo(String userUuid);
+    void updateExpertStatus(String userUuid,String expertUuid);
     boolean operationUser(String userUuid,String status);
 
 

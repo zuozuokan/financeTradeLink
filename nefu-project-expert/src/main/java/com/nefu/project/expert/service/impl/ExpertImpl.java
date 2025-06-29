@@ -13,7 +13,7 @@ import com.nefu.project.domain.entity.User;
 import com.nefu.project.expert.mapper.IExpertMapper;
 import com.nefu.project.expert.service.IExpertService;
 import com.nefu.project.expert.service.IMinioService;
-import com.nefu.project.user.mapper.IUserMapper;
+import com.nefu.project.expert.mapper.IUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -260,36 +260,6 @@ public class ExpertImpl implements IExpertService {
     }
 
 
-    /**
-     * description 管理员获取用户的专家列表
-     *
-     * @params [userUuid]
-     * @return java.util.List<com.nefu.project.domain.entity.Expert>
-     */
-    @Override
-    public List<Expert> getExperts(String userUuid) {
-        // 参数校验
-        stringIsExist(userUuid, "用户ID为空");
-        // 检查用户是否有权限
-        User user = iUserMapper.selectOne(
-                new LambdaQueryWrapper<User>()
-                        .eq(User::getUserUuid, userUuid)
-                        .eq(User::getUserRole, "ADMIN")
-        );
-        if (Objects.isNull(user)) {
-            throw new UserException("用户不存在,添加专家失败");
-        }
-        // 查询数据库
-        try {
-            List<Expert> expertList = iExpertMapper.getExperts();
-            if (expertList.isEmpty()) {
-                throw new ExpertException("没有查询到专家信息");
-            }
-            return expertList;
-        } catch (DbException e) {
-            throw new DbException(e.getMessage());
-        }
-    }
     /**
      * description 获取自己的专家信息
      *

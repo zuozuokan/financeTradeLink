@@ -5,6 +5,7 @@ import com.nefu.project.admin.job.UserDelayedTaskJob;
 import com.nefu.project.admin.service.IAdminService;
 import com.nefu.project.admin.service.impl.AdminServiceimpl;
 import com.nefu.project.common.result.HttpResult;
+import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.Knowledge;
 import com.nefu.project.domain.entity.User;
 import io.swagger.v3.oas.annotations.OpenAPI31;
@@ -128,8 +129,20 @@ public class AdminController {
         List<User> users = iAdminService.getAllExpert();
         return HttpResult.success(users);
     }
-
-
+    @SneakyThrows
+    @Operation(summary = "获取所有专家详细信息")
+    @GetMapping("/find-all-experts-info")
+    public HttpResult<List<Expert>> findAllExpertsinfo(String userUuid){
+        List<Expert> experts = iAdminService.getExpertsInfo(userUuid);
+        return HttpResult.success(experts);
+    }
+    @SneakyThrows
+    @Operation(summary = "更新专家信息的状态")
+    @GetMapping("/update-experts-info")
+    public HttpResult findAllExpertsinfo(String userUuid,String expertUuid){
+        iAdminService.updateExpertStatus(userUuid,expertUuid);
+        return HttpResult.success("更新专家信息成功");
+    }
     @SneakyThrows
     @Operation(summary = "操作用户")
     @PostMapping("/operation-user")

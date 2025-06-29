@@ -96,14 +96,6 @@ public class ExpertController {
         expertService.updateExpert(expertUuid, expertData);
         return HttpResult.success("更新专家信息成功");
     }
-    /**
-     * 管理员获取专家列表
-     */
-    @Operation(summary = "管理员获取专家列表")
-    @GetMapping("list")
-    public HttpResult<List<Expert>> getExperts(@RequestParam("UserUuid") String userUuid) {
-        return HttpResult.success(expertService.getExperts(userUuid));
-    }
 
     /**
      * 获取专家详情

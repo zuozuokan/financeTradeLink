@@ -24,11 +24,7 @@
             <artifactId>nefu-project-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.nefu.project.user</groupId>
-            <artifactId>nefu-project-user</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
 <!--        minio依赖-->
         <dependency>
             <groupId>io.minio</groupId>

@@ -1,9 +1,10 @@
 package com.nefu.project.domain.config;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+
 
 import java.net.NetworkInterface;
 import java.security.SecureRandom;
@@ -12,7 +13,7 @@ import java.util.Enumeration;
 import java.util.Optional;
 
 @Configuration
-@EnableJdbcAuditing
+@EnableAutoConfiguration
 public class SnowflakeGenerator {
     @Bean
     AuditorAware<String> auditorAware() {

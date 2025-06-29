@@ -6,6 +6,8 @@ import com.nefu.project.domain.entity.User;
 import java.util.List;
 
 public interface IUserService {
+
+    User getCurrentUserInfo(String uuid);
     /**
      * @description: 个人信息（修改密码、修改昵称、修改电话号码、修改收货地址|新增收货地址）
      * @param:
@@ -16,5 +18,6 @@ public interface IUserService {
     boolean updatePhone(String uuid,String userPhone);
     boolean updateAddress(String addressUuid, Address userAddress);
     boolean addAddress(String uuid,Address userAddress);
+
 
 }

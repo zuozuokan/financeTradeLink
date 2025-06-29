@@ -1,6 +1,7 @@
 package com.nefu.project.user.service.impl;
 
 import cn.hutool.crypto.SmUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.nefu.project.common.exception.user.DbException;
@@ -27,6 +28,23 @@ public class UserServiceImpl implements IUserService {
     private IAddressMapper iAddressMapper;
     @Autowired
     private ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder;
+
+
+    /**
+     * @description: 获取当前用户信息
+     * @param: [uuid]
+     * @return: boolean
+     */
+    @Override
+    public User getCurrentUserInfo(String uuid) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getUserUuid, uuid);
+        User findUser = iUserMapper.selectOne(lambdaQueryWrapper);
+        if (findUser == null) {
+            throw new DbException("用户不存在");
+        }
+        return findUser;
+    }
 
     /**
      * @description: 实现修改密码

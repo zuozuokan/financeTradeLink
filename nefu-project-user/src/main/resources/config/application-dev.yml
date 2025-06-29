@@ -1,3 +1,18 @@
+minio:
+  endpoint: http://124.221.141.62:9000
+  accessKey: admin                      # MinIO 登录账号
+  secretKey: ZLY1502319                # MinIO 登录密码
+  bucketName: product-bucket              # 存储桶名称
+  image-folder: images         # 图片存储目录
+  #  presigned-expiry-hours: 24         # 预签名URL有效期(小时)
+  secure: false
+
+# Spring 配置
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 knife4j:
   enable: true

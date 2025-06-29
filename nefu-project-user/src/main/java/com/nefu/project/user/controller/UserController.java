@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Tag(name = "用户模块接口")
 @RestController
@@ -23,6 +24,20 @@ public class UserController {
 
     @Autowired
     private IUserService iUserService;
+
+    /**
+     * @description: 获取当前用户信息
+     * @param: []
+     * @return: com.nefu.project.common.result.HttpResult
+     */
+    @PostMapping("/get-current-user-info")
+    public HttpResult getCurrentUserInfo(String uuid) {
+        if (Objects.isNull(uuid) || uuid.isEmpty()) {
+            return HttpResult.failed("用户uuid不能为空");
+        }
+        User user = iUserService.getCurrentUserInfo(uuid);
+        return HttpResult.success(user);
+    }
 
    /** 
     * @description: 修改密码 

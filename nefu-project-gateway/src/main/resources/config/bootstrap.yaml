@@ -34,26 +34,51 @@ spring:
 #        路由的唯一id,名称自定义
         - id: nefu-user-id
 #          lb:loadbalance(负载均衡)
-#          nefu-user-service微服务名称
+#          nefu-user-service微服务名称，用户微服务
           uri: lb://nefu-user-service
           predicates:
             - Path=/project-user/**
           filters:
             - StripPrefix=1
-#          基本注册
+#          基本微服务
         - id: nefu-base-id
           uri: lb://nefu-base-service
           predicates:
             - Path=/project-base/**
           filters:
             - StripPrefix=1
+#            管理员微服务
+        - id: nefu-admin-id
+          uri: lb://nefu-admin-service
+          predicates:
+            - Path=/project-admin/**
+          filters:
+            - StripPrefix=1
+#            银行微服务
+        - id: nefu-bank-id
+          uri: lb://nefu-bank-service
+          predicates:
+            - Path=/project-bank/**
+          filters:
+            - StripPrefix=1
+#            专家微服务
+        - id: nefu-expert-id
+          uri: lb://nefu-expert-service
+          predicates:
+            - Path=/project-expert/**
+          filters:
+            - StripPrefix=1
 
+      ##临时环境
+
+      ##临时环境
+      ########  其他路由
 
   config:
     import:
       - optional:nacos:mysql.yaml?group=DEV&refresh=true
       - optional:nacos:redis.yaml?group=DEV&refresh=true
-########  其他路由
+
 
 
 #网关配置

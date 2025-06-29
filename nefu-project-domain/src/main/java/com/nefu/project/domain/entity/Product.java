@@ -55,7 +55,6 @@ public class Product {
     @Schema(description = "发布用户的ID")
     @TableField("product_user_uuid")
     private String productUserUuid;
-
     @Schema(description = "商品状态")
     @TableField("product_status")
     private String productStatus;
@@ -67,4 +66,8 @@ public class Product {
     @Schema(description = "更新时间")
     @TableField("product_updated_time")
     private Date productUpdatedTime;
+
+    @Schema(description = "图片Base64")
+    @TableField("product_image_url_test")
+    private String productImageUrlTest;
 }

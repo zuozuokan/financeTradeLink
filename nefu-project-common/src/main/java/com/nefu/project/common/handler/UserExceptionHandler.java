@@ -1,6 +1,7 @@
 package com.nefu.project.common.handler;
 
 
+import com.nefu.project.common.exception.user.LoanApplicationException;
 import com.nefu.project.common.exception.user.UserException;
 import com.nefu.project.common.result.HttpResult;
 import lombok.extern.slf4j.Slf4j;

@@ -24,6 +24,17 @@ import java.util.Date;
 @TableName("user_tab")
 public class User {
 
+    // 管理员数量
+    public static final int ADMIN_NUM = 5;
+
+    //枚举类型Role
+    public enum Role {
+        ADMIN,
+        USER,
+        BANK,
+        EXPERT
+    }
+
     @Schema(description = "用户id主键")
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;

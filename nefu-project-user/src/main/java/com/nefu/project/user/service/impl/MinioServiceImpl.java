@@ -2,6 +2,11 @@ package com.nefu.project.user.service.impl;
 
 import com.nefu.project.common.exception.user.LoanApplicationException;
 import com.nefu.project.user.service.IMinioService;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

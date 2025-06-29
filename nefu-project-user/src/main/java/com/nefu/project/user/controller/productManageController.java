@@ -7,6 +7,7 @@ import com.nefu.project.common.exception.productManager.ProductManagerException;
 import com.nefu.project.common.exception.productManager.UploadException;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Product;
+import com.nefu.project.user.service.IMinioService;
 import com.nefu.project.user.service.IProductManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,24 +33,39 @@ public class productManageController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    @Operation(summary = "发布农产品样式图")
-    @PostMapping("addPictures")
-    @SneakyThrows
-    public HttpResult<String> addProductPicture(@RequestPart("file" ) MultipartFile file) {
-        String contentType = file.getContentType();
-        if(!contentType.contains("image")){
-            throw new UploadException("图片格式不正确，上传失败");
-        }
-        String encode = Base64.encode(file.getInputStream());
-    //    String base64Image = "data:" + contentType + ";base64," + encode;
-        String nCode = SmUtil.sm3(encode);//摘要为64位
 
-        Boolean hasImage = stringRedisTemplate.hasKey(nCode);
-        if(hasImage) throw new UploadException("图片已经存在，上传失败");
-        stringRedisTemplate.opsForValue().set(nCode,encode);
-        return HttpResult.success(nCode);
+    @Autowired
+    private IMinioService minioService;
 
+//    @Operation(summary = "发布农产品样式图")
+//    @PostMapping("addPictures")
+//    @SneakyThrows
+//    public HttpResult<String> addProductPicture(@RequestPart("file" ) MultipartFile file) {
+//        String contentType = file.getContentType();
+//        if(!contentType.contains("image")){
+//            throw new UploadException("图片格式不正确，上传失败");
+//        }
+//        String encode = Base64.encode(file.getInputStream());
+//    //    String base64Image = "data:" + contentType + ";base64," + encode;
+//        String nCode = SmUtil.sm3(encode);//摘要为64位
+//
+//        Boolean hasImage = stringRedisTemplate.hasKey(nCode);
+//        if(hasImage) throw new UploadException("图片已经存在，上传失败");
+//        stringRedisTemplate.opsForValue().set(nCode,encode);
+//        return HttpResult.success(nCode);
+//
+//    }
+
+
+    @Operation(summary = "发布带描述农产品样式图")
+    @PostMapping("/upload/imagename")
+    public HttpResult uploadImageWithName(
+            @RequestParam("file") MultipartFile file,
+            @RequestPart String customName) {
+        String objectName = minioService.uploadImage(file, customName);
+        return HttpResult.success(objectName);
     }
+
     @Operation(summary = "添加农产品")
     @PostMapping("addProduct")
     public HttpResult addProduct(@RequestBody Product product,String userUuid ){
@@ -66,9 +82,9 @@ public class productManageController {
     @Operation(summary = "获取农产品")
     @GetMapping("{productUuid}")
     public HttpResult getProductByUuid( @PathVariable("productUuid") String uuid){
-        log.info("getProductByUuid:{}",uuid);
+  //      log.info("getProductByUuid:{}",uuid);
         Product product = IProductManageService.selectProductByUuid(uuid);
-        log.info("商品:{}",product);
+      //  log.info("商品:{}",product);
         if(product == null){
             throw new ProductManagerException("未查找到该商品的相关信息，请检查输入信息是否有误");
         } else if (product.getProductStock()==0) {

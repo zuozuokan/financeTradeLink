@@ -2,6 +2,7 @@ package com.nefu.project.base.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nefu.project.base.service.IKnowledgeService;
+import com.nefu.project.base.service.INewKnowledgeService;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +20,10 @@ public class KnowledgeController {
     @Autowired
     private IKnowledgeService service;
 
-    @PostMapping
+    @Autowired
+    private INewKnowledgeService iNewKnowledgeService;
+
+    @PostMapping("/")
     public HttpResult<String> publish(@RequestBody Knowledge knowledge) {
         return service.publish(knowledge)
                 ? HttpResult.success("发布成功")
@@ -34,13 +38,14 @@ public class KnowledgeController {
         return HttpResult.success(service.list(page, size, category, keyword));
     }
 
-    @GetMapping("/{uuid}")
-    public HttpResult<String> get(@PathVariable String uuid) {
+    @GetMapping("/find/{uuid}")
+    public HttpResult get(@PathVariable String uuid) {
         Knowledge k = service.getByUuid(uuid);
-        return k != null ? HttpResult.success(k.toString()) : HttpResult.failed("未找到");
+        // 更正为直接返回对象
+        return k != null ? HttpResult.success(k) : HttpResult.failed("未找到");
     }
 
-    @PostMapping("/{uuid}")
+    @PostMapping("/del/{uuid}")
     public HttpResult<String> delete(@PathVariable String uuid) {
         return service.deleteByUuid(uuid)
                 ? HttpResult.success("删除成功")
@@ -52,5 +57,15 @@ public class KnowledgeController {
         return service.like(uuid)
                 ? HttpResult.success("点赞成功")
                 : HttpResult.failed("点赞失败");
+    }
+
+
+
+    @PostMapping("/update/{uuid}")
+    public HttpResult<String> update(@PathVariable String uuid, @RequestBody Knowledge updatedData) {
+       if (iNewKnowledgeService.updateKnowledage(uuid,updatedData)){
+            return HttpResult.success("更新成功");
+        }
+        return HttpResult.failed("更新失败");
     }
 }

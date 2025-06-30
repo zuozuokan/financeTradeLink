@@ -9,5 +9,6 @@ public interface IKnowledgeService {
     Knowledge getByUuid(String uuid);
     boolean deleteByUuid(String uuid);
     boolean like(String uuid);
+
 }
 

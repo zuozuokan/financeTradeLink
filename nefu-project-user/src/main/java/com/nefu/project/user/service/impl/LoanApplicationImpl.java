@@ -102,7 +102,7 @@ public class LoanApplicationImpl implements ILoanApplicationService {
          if (loanApplication == null) {
              throw new LoanApplicationException("此融资申请不存在");
          }
-         if(userUuid.equals(loanApplication.getLoanApplicationUserUuid())){
+         if(!userUuid.equals(loanApplication.getLoanApplicationUserUuid())){
              throw new LoanApplicationException("无权限删除此融资申请");
          }
 

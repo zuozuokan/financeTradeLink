@@ -69,6 +69,7 @@ public class productManageController {
     @Operation(summary = "添加农产品")
     @PostMapping("addProduct")
     public HttpResult addProduct(@RequestBody Product product,String userUuid ){
+
 //         String nCode = stringRedisTemplate.opsForValue().get(product.getProductImageUrl());
 //         product.setProductImageUrl(nCode);
         if(!IProductManageService.addProducts(product,userUuid))
@@ -95,14 +96,26 @@ public class productManageController {
     @Operation(summary = "根据种类获取商品")
     @GetMapping("category")
     public HttpResult selectAllProductByCategory(String category){
-        log.info("selectAllProductByCategory:{}",category);
+//        log.info("selectAllProductByCategory:{}",category);
         List<Product> products = IProductManageService.selectAllProductByCategory(category);
         if(products == null || products.isEmpty()){//返回空列表是empty
             return HttpResult.failed("该种类商品为空");
         }
         return HttpResult.success(products);
     }
-    @Operation(summary = "获取农产品列表")
+
+    @Operation(summary = "根据种类和uuid获取商品")
+    @GetMapping("uuid-category")
+    public HttpResult selectAllProductByUuidAndCategory(String uuid,String category){
+        List<Product> products = IProductManageService.selectAllProductByUuidAndCategory(uuid,category);
+        if(products == null || products.isEmpty()){//返回空列表是empty
+            return HttpResult.failed("该种类暂未发布商品");
+        }
+        return HttpResult.success(products);
+    }
+
+
+    @Operation(summary = "获取所有农产品列表")
     @GetMapping("list")
     public HttpResult listProduct(){
         List<Product> products = IProductManageService.selectAllProduct();
@@ -112,6 +125,17 @@ public class productManageController {
         }
         return HttpResult.success(products);
     }
+
+    @Operation(summary = "根据用户uuid获取农产品列表")
+    @GetMapping("listby-uuid")
+    public HttpResult listProductByuuid(String userUuid){
+        List<Product> products = IProductManageService.selectAllProductByuuid(userUuid);
+        if(products == null || products.isEmpty()){
+            return HttpResult.failed("该用户暂未发布商品");
+        }
+        return HttpResult.success(products);
+    }
+
     @Operation(summary = "删除/下架商品")
 //    hahah
     @PostMapping("delete")
@@ -128,8 +152,6 @@ public class productManageController {
         IProductManageService.updateProducts(product);
         return HttpResult.success(product);
     }
-
-
 
 
 

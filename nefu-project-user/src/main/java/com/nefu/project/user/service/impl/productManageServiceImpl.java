@@ -179,4 +179,28 @@ public class productManageServiceImpl implements IProductManageService {
     public String uploadImage(MultipartFile file, String objectName) {
             return "";
     }
+
+    @Override
+    public List<Product> selectAllProductByuuid(String uuid) {
+        List<Product>productList = new ArrayList<>();
+        try{
+            productList = productManageMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getProductUserUuid, uuid));}
+        catch (Exception e){
+            throw new DbException("数据库查询失败");
+        }
+        return productList;
+    }
+
+    @Override
+    public List<Product> selectAllProductByUuidAndCategory(String uuid, String category) {
+        List<Product>productList = new ArrayList<>();
+        try{
+            productList = productManageMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getProductUserUuid, uuid)
+                    .eq(Product::getProductCategory, category));
+        }
+        catch (Exception e){
+            throw new DbException("数据库查询失败");
+        }
+        return productList;
+    }
 }

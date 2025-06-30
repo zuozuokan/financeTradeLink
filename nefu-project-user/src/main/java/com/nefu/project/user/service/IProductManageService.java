@@ -13,9 +13,12 @@ public interface IProductManageService {
 
     List<Product> selectAllProduct(); //获取农产品列表
 
+    List<Product> selectAllProductByuuid(String uuid); //获取农产品列表
+
     Product selectProductById(Integer id);  //获取商品详情
 
     Product selectProductByUuid(String uuid);
+
 
     void updateProduct(Product product); //更新商品
 
@@ -26,6 +29,8 @@ public interface IProductManageService {
     boolean updateProducts(Product product);
 
     List<Product> selectAllProductByCategory(String category);
+
+    List<Product> selectAllProductByUuidAndCategory(String uuid,String category);
 
 
     String uploadImage(MultipartFile file, String objectName);//上传图片返回url

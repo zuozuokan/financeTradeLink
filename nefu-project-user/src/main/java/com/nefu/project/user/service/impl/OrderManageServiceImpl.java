@@ -3,9 +3,11 @@ package com.nefu.project.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.nefu.project.common.exception.order.AmountException;
 import com.nefu.project.common.exception.order.StockException;
 import com.nefu.project.common.exception.productManager.ProductManagerException;
 import com.nefu.project.common.exception.user.DbException;
+import com.nefu.project.common.exception.user.UserException;
 import com.nefu.project.domain.entity.Order;
 import com.nefu.project.domain.entity.Product;
 import com.nefu.project.domain.entity.User;
@@ -63,36 +65,94 @@ public class OrderManageServiceImpl implements IOrderManageService {
         queryWrapper.eq(User::getUserUuid, UserUuid);
         User user = userMapper.selectOne(queryWrapper);
 
+
    //     log.debug(product.toString());
-        if(product==null||product.getProductStock()==0||product.getProductStock()<amounts){
-            throw new StockException("库存不足");
+        // 新增：校验 product 是否为 null
+        if (product == null) {
+            String msg = "商品不存在！请查看操作";
+            log.debug(msg); // 记录错误日志，方便排查
+            throw new StockException(msg); // 抛自定义异常
         }
 
+// 原逻辑：校验库存
+        if (product.getProductStock()==0||product.getProductStock() < amounts) {
+            throw new StockException("库存不足，当前库存: " + product.getProductStock());
+        }
+
+        BigDecimal userAmount = user.getUserAmount();
+        if(userAmount==null){
+            throw new AmountException("账户余额为空,支付失败！");
+        }
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getUserUuid, user.getUserUuid());
+        BigDecimal totalPrice = product.getProductPrice().multiply(new BigDecimal(amounts));
+        log.debug("<UNK>"+totalPrice+"<UNK>");
+
+        if (userAmount.compareTo(totalPrice) >= 0) {
+            // 3. 余额足够：执行扣除（subtract 得到新余额）
+            BigDecimal updatedAmount = user.getUserAmount().subtract(totalPrice);
+            log.debug("<UNK>"+updatedAmount+"<UNK>");
+            updateWrapper.set(User::getUserAmount,updatedAmount);
+            userMapper.update(updateWrapper);
+        } else {
+            // 余额不足：抛异常或返回错误提示
+            throw new AmountException("用户余额不足！");
+        }
+        product.setProductStock(product.getProductStock()-amounts);
+        updateSellerBalance(product.getProductUserUuid(), totalPrice);
+        productManageService.updateProduct(product);
+        //这是真正执行更新 没有这步 前面只是设置了新属性 却没有实际更新动作
+        /*
+         * 用户余额要改变
+         * 操作这个行为的用户的uuid怎么获取
+         * */
+
+
         Order order = new Order();
         order.setOrderProductUuid(product.getProductUuid());
         order.setOrderQuantity(amounts);
         order.setOrderUuid(IdWorker.getIdStr());
-        BigDecimal totalPrice = product.getProductPrice().multiply(new BigDecimal(amounts));
-        log.debug("<UNK>"+totalPrice+"<UNK>");
+
         order.setOrderTotalPrice(totalPrice);
         order.setOrderUserUuid(UserUuid);
-        product.setProductStock(product.getProductStock()-amounts);
+
 
         orderManageMapper.insert(order);
 
-        productManageService.updateProduct(product);
-        BigDecimal updatedAmount = user.getUserAmount().subtract(totalPrice);
-        log.debug("<UNK>"+updatedAmount+"<UNK>");
-        updateWrapper.set(User::getUserAmount,updatedAmount);
-        userMapper.update(updateWrapper);//这是真正执行更新 没有这步 前面只是设置了新属性 却没有实际更新动作
-        /*
-        * 用户余额要改变
-        * 操作这个行为的用户的uuid怎么获取
-        * */
+
+
+
+
         return order.getOrderUuid();
     }
+
+    @Override
+    public void updateSellerBalance(String sellerUuid, BigDecimal income) {
+        // 查询商品发布人信息
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserUuid, sellerUuid);
+        User seller = userMapper.selectOne(queryWrapper);
+
+        if (seller != null) {
+            // 更新商品发布人余额（原子性操作）
+            LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+            updateWrapper.eq(User::getUserUuid, sellerUuid);
+            updateWrapper.set(User::getUserAmount, seller.getUserAmount().add(income));
+            int rows = userMapper.update(null, updateWrapper);
+//
+            if (rows > 0) {
+                log.info("成功为发布者 {} 增加收入: {}", sellerUuid, income);
+            } else {
+                log.error("更新发布者 {} 余额失败，未找到用户或更新行数为0", sellerUuid);
+                throw new RuntimeException("更新发布者账户失败");
+            }
+        } else {
+            log.debug("商品发布者不存在，无法分配收入，sellerUuid={}", sellerUuid);
+            throw new UserException("商品发布者不存在");
+        }
+
+    }
+
     //更新订单信息
     @Override
     public boolean updateOrder(String Uuid, Order order) {

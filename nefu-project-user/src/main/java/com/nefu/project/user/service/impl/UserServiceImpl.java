@@ -4,6 +4,7 @@ import cn.hutool.crypto.SmUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.nefu.project.common.exception.user.DbException;
 import com.nefu.project.domain.entity.Address;
 import com.nefu.project.domain.entity.User;
@@ -16,6 +17,7 @@ import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -177,5 +179,59 @@ public class UserServiceImpl implements IUserService {
         return false;
     }
 
+    @Override
+    public List<User> findAllNormalUsers() {
+        LambdaQueryWrapper<User> query = new LambdaQueryWrapper<>();
+        query.eq(User::getUserRole, "USER"); // 或 "FARMER"，具体取决于你数据库定义
+        return iUserMapper.selectList(query);
+    }
 
+
+    @Override
+    public List<User> findAllExpertUsers() {
+        LambdaQueryWrapper<User> query = new LambdaQueryWrapper<>();
+        query.eq(User::getUserRole, "EXPERT"); // 或 "FARMER"，具体取决于你数据库定义
+        return iUserMapper.selectList(query);
+    }
+
+
+    @Override
+    public List<User> findAllBankUsers() {
+        LambdaQueryWrapper<User> query = new LambdaQueryWrapper<>();
+        query.eq(User::getUserRole, "BANK"); // 或 "FARMER"，具体取决于你数据库定义
+        return iUserMapper.selectList(query);
+    }
+
+    /**
+     * @param uuid
+     * @param status
+     * @return
+     */
+    @Override
+    public boolean updateUserStatus(String uuid, String status) {
+        return iUserMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                .eq(User::getUserUuid, uuid)
+                .set(User::getUserStatus, status)) > 0;
+    }
+
+    /**
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean updateUserInfo(User user) {
+        LambdaUpdateWrapper<User> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(User::getUserUuid, user.getUserUuid())
+                .set(User::getUserName, user.getUserName())
+                .set(User::getUserPhone, user.getUserPhone())
+                .set(User::getUserRole, user.getUserRole())
+                .set(User::getUserStatus, user.getUserStatus())
+                .set(User::getUserUpdateTime, new Date());
+        try {
+            int rows = iUserMapper.update(null, lambdaUpdateWrapper);
+            return rows > 0;
+        } catch (DbException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
 }

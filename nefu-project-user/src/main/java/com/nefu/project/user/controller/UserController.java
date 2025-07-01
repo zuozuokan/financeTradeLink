@@ -4,11 +4,8 @@ import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Address;
 import com.nefu.project.domain.entity.User;
 import com.nefu.project.user.service.IUserService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,6 +98,47 @@ public class UserController {
         return HttpResult.failed("地址修改失败");
     }
 
+    @GetMapping("/find-all-users")
+    public HttpResult findAllUsers() {
+        List<User> users = iUserService.findAllNormalUsers();
+        if (users != null && !users.isEmpty()) {
+            return HttpResult.success(users);
+        }
+        return HttpResult.failed("没有找到用户信息");}
 
+    @GetMapping("/find-all-experts")
+    public HttpResult findAllExperts() {
+        List<User> users = iUserService.findAllExpertUsers();
+        if (users != null && !users.isEmpty()) {
+            return HttpResult.success(users);
+        }
+        return HttpResult.failed("没有找到用户信息");
+    }
+
+    @GetMapping("/find-all-banks")
+    public HttpResult findAllBanks() {
+        List<User> users = iUserService.findAllBankUsers();
+        if (users != null && !users.isEmpty()) {
+            return HttpResult.success(users);
+        }
+        return HttpResult.failed("没有找到用户信息");
+    }
+
+    //  修改用户状态（启用/禁用）
+    @PostMapping("/update-status")
+    public HttpResult<String> updateStatus(@RequestParam String uuid,
+                                           @RequestParam String status) {
+        boolean ok = iUserService.updateUserStatus(uuid, status);
+        return ok ? HttpResult.success("状态更新成功") : HttpResult.failed("更新失败");
+    }
+
+    // 修改用户信息
+    @PostMapping("/update-user")
+    public HttpResult<String> updateUser(@RequestBody User user) {
+        boolean updated = iUserService.updateUserInfo(user);
+        return updated ? HttpResult.success("更新成功") : HttpResult.failed("更新失败");
+    }
+
+    // TODO: 新增账号
 
 }

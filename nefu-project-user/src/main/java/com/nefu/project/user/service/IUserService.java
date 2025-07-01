@@ -19,5 +19,14 @@ public interface IUserService {
     boolean updateAddress(String addressUuid, Address userAddress);
     boolean addAddress(String uuid,Address userAddress);
 
+    // 按照角色查询用户
+    List<User> findAllNormalUsers();
+    List<User> findAllExpertUsers();
+    List<User> findAllBankUsers();
 
+    // 更新用户状态
+    boolean updateUserStatus(String uuid, String status);
+
+
+    boolean updateUserInfo(User user);
 }

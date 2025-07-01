@@ -13,7 +13,9 @@ import com.nefu.project.user.service.IProductManageService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,17 +71,23 @@ public class productManageServiceImpl implements IProductManageService {
 
     }
     //添加商品
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Override
     public boolean addProducts(Product product,String UserUuid) {
+        // StringRedisTemplate redisTemplate;
+       // String url= stringRedisTemplate.opsForValue().get(product.getProductImageUrl());
+    //    log.info("<UNK>url<UNK>"+url);
         Product products = Product.builder()
                 .productCategory(product.getProductCategory())
                 .productName(product.getProductName())
                 .productUuid(IdWorker.getIdStr())
                 .productStock(product.getProductStock())
                 .productPrice(product.getProductPrice())
+                .productImageUrl(product.getProductImageUrl())
                 .productDescription(product.getProductDescription())
                 .productUserUuid(UserUuid)
-                .productImageUrl(product.getProductImageUrl())
+          //      .productImageUrlTest(url)
                 .productCreatedTime(new Date())
                 .productUpdatedTime(new Date())
                 .build();
@@ -165,5 +173,34 @@ public class productManageServiceImpl implements IProductManageService {
             throw new DbException("数据库更新失败");
         }
         return true;
+    }
+
+    @Override
+    public String uploadImage(MultipartFile file, String objectName) {
+            return "";
+    }
+
+    @Override
+    public List<Product> selectAllProductByuuid(String uuid) {
+        List<Product>productList = new ArrayList<>();
+        try{
+            productList = productManageMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getProductUserUuid, uuid));}
+        catch (Exception e){
+            throw new DbException("数据库查询失败");
+        }
+        return productList;
+    }
+
+    @Override
+    public List<Product> selectAllProductByUuidAndCategory(String uuid, String category) {
+        List<Product>productList = new ArrayList<>();
+        try{
+            productList = productManageMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getProductUserUuid, uuid)
+                    .eq(Product::getProductCategory, category));
+        }
+        catch (Exception e){
+            throw new DbException("数据库查询失败");
+        }
+        return productList;
     }
 }

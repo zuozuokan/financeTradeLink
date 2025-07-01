@@ -2,13 +2,12 @@ package com.nefu.project.common.handler;
 
 import com.nefu.project.common.exception.user.LoanApplicationException;
 import com.nefu.project.common.result.HttpResult;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 @RestControllerAdvice
-public class LoanApplicationHander {
+public class LoanApplicationHandler {
     /**
      * 融资模块的错误
      */

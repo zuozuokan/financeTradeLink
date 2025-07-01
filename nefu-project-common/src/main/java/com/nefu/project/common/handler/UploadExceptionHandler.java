@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UploadExceptionHandler {
     @ExceptionHandler(UploadException.class)
     public HttpResult<String> uploadException(UploadException e){
-        return HttpResult.failed("商品图片上传失败");
+        return HttpResult.failed(e.getMessage());
     }
 }

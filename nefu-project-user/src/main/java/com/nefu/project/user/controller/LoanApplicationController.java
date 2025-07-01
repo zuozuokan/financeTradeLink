@@ -28,7 +28,7 @@ public class LoanApplicationController {
      * 添加贷款申请
      */
     @Operation(summary = "添加融资申请")
-    @PostMapping()
+    @PostMapping("add")
     public HttpResult addLoanApplication(@RequestParam String userUuid, @RequestBody LoanApplication loanApplication) {
         iLoanApplicationService.addLoanApplication(userUuid, loanApplication);
         return HttpResult.success("添加融资申请成功");

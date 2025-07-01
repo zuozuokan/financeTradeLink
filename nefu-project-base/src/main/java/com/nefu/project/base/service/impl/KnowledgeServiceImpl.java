@@ -1,10 +1,12 @@
 package com.nefu.project.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nefu.project.base.mapper.IKnowledgeMapper;
+import com.nefu.project.base.mapper.INewKnowledgeMapper;
 import com.nefu.project.base.service.IKnowledgeService;
 import com.nefu.project.domain.entity.Knowledge;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class KnowledgeServiceImpl implements IKnowledgeService {
 
     @Autowired
     private IKnowledgeMapper iKnowledgeMapper;
+
+    @Autowired
+    private INewKnowledgeMapper iNewKnowledgeMapper;
 
 
     @Override
@@ -59,4 +64,5 @@ public class KnowledgeServiceImpl implements IKnowledgeService {
                 .eq(Knowledge::getKnowledgeUuid, uuid)
                 .setSql("knowledge_likes = knowledge_likes + 1")) > 0;
     }
+
 }

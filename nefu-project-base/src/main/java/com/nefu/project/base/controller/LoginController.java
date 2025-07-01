@@ -47,7 +47,7 @@ public class LoginController {
         String token = JWT.create()
                 .withClaim("uuid", user.getUserUuid()) // 用户名
                 .withClaim("role", user.getUserRole()) // 角色信息
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 120)) // 过期时间(默认过期时间2小时)
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 200)) // 过期时间(默认过期时间2小时)
                 .sign(Algorithm.HMAC256(SALT));  //数字签名
 
         // 将用户信息存入redis

@@ -12,13 +12,14 @@ import com.nefu.project.domain.entity.Order;
 import com.nefu.project.user.service.IOrderManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Tag(name="订单管理")
 @RestController
 @RequestMapping("/api/order/")
@@ -29,8 +30,9 @@ public class OrderManagerController {
 
     @Operation(summary = "下单购买商品")
     @PostMapping("create")
-    public HttpResult create(String ProductUuid,int amounts,String UserUuid){
-        orderManageService.createOrder(ProductUuid ,amounts,UserUuid);
+    public HttpResult create(String productUuid,int amounts,String userUuid){
+
+        orderManageService.createOrder(productUuid ,amounts,userUuid);
         return HttpResult.success("购买成功");
     }
 

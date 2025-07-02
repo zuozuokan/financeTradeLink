@@ -5,6 +5,7 @@ import com.nefu.project.base.service.IKnowledgeService;
 import com.nefu.project.base.service.INewKnowledgeService;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,16 @@ public class KnowledgeController {
     @Autowired
     private INewKnowledgeService iNewKnowledgeService;
 
-    @PostMapping("/")
-    public HttpResult<String> publish(@RequestBody Knowledge knowledge) {
-        return service.publish(knowledge)
+    @Operation(summary = "发布知识")
+    @PostMapping("/add")
+    public HttpResult<String> publish(@RequestBody Knowledge knowledge,
+                                      @RequestHeader("token") String token) {
+        return service.publish(knowledge, token)
                 ? HttpResult.success("发布成功")
                 : HttpResult.failed("发布失败");
     }
 
+    @Operation(summary = "列出知识列表")
     @GetMapping("/list")
     public HttpResult<Page<Knowledge>> list(@RequestParam(defaultValue = "1") int page,
                                             @RequestParam(defaultValue = "10") int size,
@@ -38,6 +42,7 @@ public class KnowledgeController {
         return HttpResult.success(service.list(page, size, category, keyword));
     }
 
+    @Operation(summary = "列出单个知识")
     @GetMapping("/find/{uuid}")
     public HttpResult get(@PathVariable String uuid) {
         Knowledge k = service.getByUuid(uuid);
@@ -45,6 +50,7 @@ public class KnowledgeController {
         return k != null ? HttpResult.success(k) : HttpResult.failed("未找到");
     }
 
+    @Operation(summary = "删除知识")
     @PostMapping("/del/{uuid}")
     public HttpResult<String> delete(@PathVariable String uuid) {
         return service.deleteByUuid(uuid)
@@ -52,6 +58,7 @@ public class KnowledgeController {
                 : HttpResult.failed("删除失败");
     }
 
+    @Operation(summary = "点赞知识")
     @PostMapping("/like/{uuid}")
     public HttpResult<String> like(@PathVariable String uuid) {
         return service.like(uuid)
@@ -61,6 +68,7 @@ public class KnowledgeController {
 
 
 
+    @Operation(summary = "更新知识")
     @PostMapping("/update/{uuid}")
     public HttpResult<String> update(@PathVariable String uuid, @RequestBody Knowledge updatedData) {
        if (iNewKnowledgeService.updateKnowledage(uuid,updatedData)){

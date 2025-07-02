@@ -267,13 +267,16 @@ public class ExpertImpl implements IExpertService {
      * @return com.nefu.project.domain.entity.Expert
      */
     @Override
-    public Expert getExpert(String expertUuid) {
+    public Expert getExpert(String expertUserUuid) {
         // 参数校验
-        stringIsExist(expertUuid, "专家ID为空");
+        stringIsExist(expertUserUuid, "专家ID为空");
         // 查询数据库
-        Expert expert = iExpertMapper.selectByUuid(expertUuid);
-        if (expert == null) {
-            throw new ExpertException("没有该专家信息");
+        Expert expert = iExpertMapper.selectOne(
+                new LambdaQueryWrapper<Expert>()
+                        .eq(Expert::getExpertUserUuid,expertUserUuid)
+        );
+        if (Objects.isNull(expert)) {
+            throw new ExpertException("该专家信息不存在");
         }
         return expert;
     }

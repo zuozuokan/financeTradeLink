@@ -264,6 +264,51 @@ public class LoanApplicationImpl implements ILoanApplicationService {
     }
 
     /**
+     * @return
+     */
+    @Override
+    public List<LoanApplication> getAllLoanApplicationList() {
+        try {
+            List<LoanApplication> loanApplicationList = iLoanApplicationMapper.selectList(new LambdaQueryWrapper<>());
+            if (loanApplicationList.isEmpty()) {
+                throw new LoanApplicationException("没有任何融资申请表");
+            }
+            return loanApplicationList;
+        } catch (DbException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    /**
+     * @param loanApplicatinUuid
+     * @param loanApplicationNewstatus
+     */
+    @Override
+    public void reviewLoanApplication(String loanApplicatinUuid, String loanApplicationNewstatus) {
+
+        stringIsExist(loanApplicatinUuid,"融资申请id为空");
+        stringIsExist(loanApplicationNewstatus,"审核状态不能为空");
+        loanApplicationNewstatus = loanApplicationNewstatus.toLowerCase();
+        if(!loanApplicationNewstatus.equals("approved") && !loanApplicationNewstatus.equals("rejected")){
+            throw new LoanApplicationException("审核状态只能是 approved 或 rejected");
+        }
+
+        LambdaUpdateWrapper<LoanApplication> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(LoanApplication::getLoanApplicationUuid, loanApplicatinUuid)
+                .set(LoanApplication::getLoanApplicationStatus, loanApplicationNewstatus);
+        try{
+            int rows = iLoanApplicationMapper.update(null, lambdaUpdateWrapper);
+            if (rows == 0) {
+                throw new LoanApplicationException("没有该融资申请表，审核状态更新失败");
+            }
+        }catch (DbException e){
+            throw new DbException(e.getMessage());
+        }
+
+    }
+
+
+    /**
      * description 判断字符是否有值
      *
      * @params [string, message]

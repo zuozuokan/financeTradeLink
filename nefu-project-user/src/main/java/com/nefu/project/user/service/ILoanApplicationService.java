@@ -15,4 +15,8 @@ public interface ILoanApplicationService {
     void updateLoanApplicationPurpose(String loanApplicatinUuid,String loanApplicationPurpose);
     List<LoanApplication> getLoanApplicationList(String userUuid);
     LoanApplication getLoanApplication(String loanApplicationUuid);
+
+    List<LoanApplication> getAllLoanApplicationList();
+    void reviewLoanApplication(String loanApplicatinUuid,String loanApplicationNewstatus);
+
 }

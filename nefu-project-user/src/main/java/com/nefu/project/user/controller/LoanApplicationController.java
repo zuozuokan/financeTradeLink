@@ -96,6 +96,13 @@ public class LoanApplicationController {
         return HttpResult.success(loanApplications);
     }
 
+    @Operation(summary = "获取所有贷款申请列表")
+    @GetMapping("all-list")
+    public HttpResult<List<LoanApplication>> getAllLoanApplicationList() {
+        List<LoanApplication> loanApplications = iLoanApplicationService.getAllLoanApplicationList();
+        return HttpResult.success(loanApplications);
+    }
+
     /** 
      * @description: 获取单个贷款申请详情 
      * @param: [loanApplicationUuid] 
@@ -107,4 +114,15 @@ public class LoanApplicationController {
         LoanApplication loanApplication = iLoanApplicationService.getLoanApplication(loanApplicationUuid);
         return HttpResult.success(loanApplication);
     }
+
+    /**
+     * 审核贷款申请
+     */
+    @Operation(summary = "审核贷款申请")
+    @PostMapping("review")
+    public HttpResult reviewLoanApplication(@RequestParam String loanApplicationUuid, @RequestParam String loanApplicationNewstatus) {
+        iLoanApplicationService.reviewLoanApplication(loanApplicationUuid, loanApplicationNewstatus);
+        return HttpResult.success("审核贷款申请成功");
+    }
+
 }

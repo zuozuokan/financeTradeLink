@@ -5,6 +5,8 @@ package com.nefu.project.user.controller;
 import com.nefu.project.common.result.HttpResult;
 
 import com.nefu.project.domain.entity.Consult;
+import com.nefu.project.user.dto.ConsultRequest;
+import com.nefu.project.user.dto.ExpertRequest;
 import com.nefu.project.user.service.IConsultService;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Tag(name = "咨询预约管理")
 @RestController
-@RequestMapping("api/consult/")
+@RequestMapping("api/user/consult/")
 public class ConsultController {
 
     @Autowired
@@ -79,8 +81,8 @@ public class ConsultController {
      */
     @Operation(summary = "获取用户的咨询预约列表")
     @GetMapping("user-list")
-    public HttpResult<List<Consult>> getConsultListByUserUuid(@RequestParam String userUuid) {
-        List<Consult> consultList = iConsultService.getConsultListByUserUuid(userUuid);
+    public HttpResult<List<ConsultRequest>> getConsultListByUserUuid(@RequestParam String userUuid) {
+        List<ConsultRequest> consultList = iConsultService.getConsultListByUserUuid(userUuid);
         return HttpResult.success(consultList);
     }
 
@@ -89,8 +91,17 @@ public class ConsultController {
      */
     @Operation(summary = "获取单个咨询预约详情")
     @GetMapping("detail")
-    public HttpResult<Consult> getConsultByConsultUuid(@RequestParam String consultUuid) {
-        Consult consult = iConsultService.getConsultByConsultUuid(consultUuid);
+    public HttpResult<ConsultRequest> getConsultByConsultUuid(@RequestParam String consultUuid) {
+        ConsultRequest consult = iConsultService.getConsultByConsultUuid(consultUuid);
         return HttpResult.success(consult);
+    }
+    /**
+     * 获取专家信息列表
+     */
+    @Operation(summary = "获取专家信息列表")
+    @GetMapping("expert-list")
+    public HttpResult<List<ExpertRequest>> getExpertInfo(@RequestParam String userUuid) {
+        List<ExpertRequest> consultList = iConsultService.getExpertListByUserUuid(userUuid);
+        return HttpResult.success(consultList);
     }
 }

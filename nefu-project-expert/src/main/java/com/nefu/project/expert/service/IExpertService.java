@@ -12,5 +12,5 @@ public interface IExpertService {
     void updateExpertHeadshot(String expertUuid, MultipartFile headFile);
     void updateExpertCertificate(String expertUuid,MultipartFile certificateFile);
 
-    Expert getExpert(String expertUuid);
+    Expert getExpert(String expertUserUuid);
 }

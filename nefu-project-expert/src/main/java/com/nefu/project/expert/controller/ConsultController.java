@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Tag(name = "咨询预约管理")
 @RestController
-@RequestMapping("api/consult/")
+@RequestMapping("api/expert/consult/")
 public class ConsultController {
 
     @Autowired

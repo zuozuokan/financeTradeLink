@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @Tag(name = "专家管理")
 @RestController
-@RequestMapping("api/expert/")
+@RequestMapping("api/expert/expert-info/")
 @RequiredArgsConstructor
 public class ExpertController {
 
@@ -39,6 +39,7 @@ public class ExpertController {
             @RequestPart("certificateFile") MultipartFile certificateFile,
             @RequestPart("data") String expertData) {
         try {
+            log.info("expertData:{}", expertData);
             JSONObject jsonObject = JSONUtil.parseObj(expertData);
             Expert expert = JSONUtil.toBean(jsonObject, Expert.class);
             expertService.addExpert(userUuid, headshotFile,certificateFile, expert);
@@ -102,7 +103,7 @@ public class ExpertController {
      */
     @Operation(summary = "获取专家详情")
     @GetMapping("info")
-    public HttpResult<Expert> getExpert(@RequestParam("expertUuid") String expertUuid) {
-        return HttpResult.success(expertService.getExpert(expertUuid));
+    public HttpResult<Expert> getExpert(@RequestParam("expertUserUuid") String expertUserUuid) {
+        return HttpResult.success(expertService.getExpert(expertUserUuid));
     }
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 
+import com.nefu.project.common.exception.Expert.ExpertException;
 import com.nefu.project.common.exception.consult.ConsultException;
 import com.nefu.project.common.exception.user.DbException;
 import com.nefu.project.common.exception.user.UserException;
@@ -13,6 +14,8 @@ import com.nefu.project.domain.entity.Consult;
 import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.User;
 
+import com.nefu.project.user.dto.ConsultRequest;
+import com.nefu.project.user.dto.ExpertRequest;
 import com.nefu.project.user.mapper.IConsultMapper;
 import com.nefu.project.user.mapper.IExpertMapper;
 import com.nefu.project.user.mapper.IUserMapper;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 咨询预约服务实现类
@@ -263,22 +267,72 @@ public class ConsultImpl implements IConsultService {
      * @return 咨询预约列表
      */
     @Override
-    public List<Consult> getConsultListByUserUuid(String userUuid) {
+    public List<ConsultRequest> getConsultListByUserUuid(String userUuid) {
         log.debug("获取用户的咨询预约列表，userUuid: {}", userUuid);
 
         // 参数校验
         stringIsExist(userUuid, "用户ID为空");
 
-        // 查询数据库
+        // 检查用户是否存在
+        User user = iUserMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getUserUuid, userUuid)
+                        .eq(User::getUserStatus, "1")
+                        .eq(User::getUserRole, "USER")
+        );
+        if (Objects.isNull(user)) {
+            throw new UserException("用户不存在，无法获取咨询预约列表");
+        }
+
+        // 查询数据库获取咨询列表
         try {
             List<Consult> consultList = iConsultMapper.getConsultListByUserUuid(userUuid);
+
             if (consultList.isEmpty()) {
                 throw new ConsultException("该用户没有咨询预约记录");
             }
-            return consultList;
+
+            // 将实体类转换为DTO列表
+            return consultList.stream()
+                    .map(this::convertToConsultRequest)
+                    .collect(Collectors.toList());
         } catch (DbException e) {
             throw new DbException("数据库查询失败：" + e.getMessage());
         }
+    }
+
+    /**
+     * 将Consult实体转换为ConsultRequest DTO
+     */
+    private ConsultRequest convertToConsultRequest(Consult consult) {
+        // 查询专家信息用于填充DTO
+        Expert expert = iExpertMapper.selectOne( new LambdaQueryWrapper<Expert>()
+                .select(Expert::getExpertUserUuid)
+                .eq(Expert::getExpertUuid, consult.getConsultExpertUuid())
+                .eq(Expert::getExpertStatus,"1")
+        );
+        User user = iUserMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getUserUuid, expert.getExpertUserUuid())
+                        .eq(User::getUserStatus,"1")
+                        .eq(User::getUserRole,"EXPERT")
+
+        );
+
+
+        ConsultRequest request = new ConsultRequest();
+        request.setConsultUuid(consult.getConsultUuid());
+        request.setConsultTitle(consult.getConsultTitle());
+        request.setConsultType(consult.getConsultType());
+        request.setConsultStatus(consult.getConsultStatus());
+        request.setConsultExpertUserUuid(expert.getExpertUserUuid());
+        request.setConsultDescription(consult.getConsultDescription());
+        request.setConsultExpertName(user != null ? user.getUserName() : "未知专家");
+        request.setConsultAppointTime(consult.getConsultAppointTime());
+        request.setConsultCreateTime(consult.getConsultCreatedTime());
+        request.setConsultUpdateTime(consult.getConsultUpdatedTime());
+
+        return request;
     }
 
     /**
@@ -288,7 +342,7 @@ public class ConsultImpl implements IConsultService {
      * @return 咨询预约对象
      */
     @Override
-    public Consult getConsultByConsultUuid(String consultUuid) {
+    public ConsultRequest getConsultByConsultUuid(String consultUuid) {
         log.debug("获取咨询预约详情，consultUuid: {}", consultUuid);
 
         // 参数校验
@@ -299,9 +353,95 @@ public class ConsultImpl implements IConsultService {
         if (Objects.isNull(consult)) {
             throw new ConsultException("该咨询预约不存在");
         }
-        return consult;
+        Expert expert = iExpertMapper.selectOne( new LambdaQueryWrapper<Expert>()
+                        .select(Expert::getExpertUserUuid)
+                .eq(Expert::getExpertUuid, consult.getConsultExpertUuid())
+                .eq(Expert::getExpertStatus,"1")
+        );
+        User user = iUserMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getUserUuid, expert.getExpertUserUuid())
+                        .eq(User::getUserStatus,"1")
+                        .eq(User::getUserRole,"EXPERT")
+
+        );
+        ConsultRequest consultRequest = new ConsultRequest();
+        consultRequest.setConsultUuid(consult.getConsultUuid());
+        consultRequest.setConsultTitle(consult.getConsultTitle());
+        consultRequest.setConsultType(consult.getConsultType());
+        consultRequest.setConsultStatus(consult.getConsultStatus());
+        consultRequest.setConsultDescription(consult.getConsultDescription());
+        consultRequest.setConsultExpertUserUuid(expert.getExpertUserUuid());
+        consultRequest.setConsultExpertName(user != null ? user.getUserName() : "未知专家");
+        consultRequest.setConsultAppointTime(consult.getConsultAppointTime());
+        consultRequest.setConsultCreateTime(consult.getConsultCreatedTime());
+        consultRequest.setConsultUpdateTime(consult.getConsultUpdatedTime());
+
+        return consultRequest;
+    }
+    /**
+     * description 获取所有专家信息
+     *
+     * @return java.util.List<com.nefu.project.domain.entity.Expert>
+     * @params [userUuid]
+     */
+    @Override
+    public List<ExpertRequest> getExpertListByUserUuid(String userUuid) {
+        // 参数校验
+        stringIsExist(userUuid, "用户ID为空");
+
+        // 检查用户是否有权限
+        User user = iUserMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getUserUuid, userUuid)
+                        .eq(User::getUserRole, "USER")
+                        .eq(User::getUserStatus, "1")
+        );
+
+        if (Objects.isNull(user)) {
+            throw new UserException("用户不存在,无权访问");
+        }
+
+        // 查询数据库
+        try {
+            List<Expert> expertList = iExpertMapper.getExperts();
+
+            if (expertList.isEmpty()) {
+                throw new ExpertException("没有查询到专家信息");
+            }
+
+            // 将 Expert 实体列表转换为 ExpertRequest DTO 列表
+            return expertList.stream()
+                    .map(this::convertToExpertRequest)
+                    .collect(Collectors.toList());
+        } catch (DbException e) {
+            throw new DbException("获取专家列表失败: " + e.getMessage());
+        }
     }
 
+    /**
+     * 将 Expert 实体转换为 ExpertRequest DTO
+     */
+    private ExpertRequest convertToExpertRequest(Expert expert) {
+        ExpertRequest request = new ExpertRequest();
+        // 查询专家信息用于填充DTO
+        User user = iUserMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getUserUuid, expert.getExpertUserUuid())
+                        .eq(User::getUserStatus, "1")
+                        .eq(User::getUserRole, "EXPERT")
+        );
+        request.setExpertUuid(expert.getExpertUuid());
+        request.setExpertName(user.getUserName());
+        request.setExpertphone(user.getUserPhone());
+        request.setExpertTitle(expert.getExpertTitle());
+        request.setExpertHeadshotUrl(expert.getExpertHeadshot());
+        request.setExpertIntroduction(expert.getExpertIntroduction());
+        request.setExpertCertificateUrl(expert.getExpertCertificate());
+        request.setExpertSpecialty(expert.getExpertSpecialty());
+
+        return request;
+    }
     /**
      * 检查字符串是否存在（非空）
      */

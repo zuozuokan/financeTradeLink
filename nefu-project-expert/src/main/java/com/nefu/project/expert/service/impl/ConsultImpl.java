@@ -4,6 +4,7 @@ package com.nefu.project.expert.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.nefu.project.common.exception.Expert.ExpertException;
 import com.nefu.project.common.exception.consult.ConsultException;
 import com.nefu.project.common.exception.user.DbException;
 import com.nefu.project.common.exception.user.UserException;
@@ -97,14 +98,18 @@ public class ConsultImpl implements IConsultService {
 
         // 参数校验
         stringIsExist(userUuid, "用户ID为空");
-
+        Expert expert = iExpertMapper.selectOne(
+                new LambdaQueryWrapper<Expert>()
+                        .eq(Expert::getExpertUserUuid,userUuid)
+        );
+        if (Objects.isNull(expert)) {
+            throw new ExpertException("该专家信息不存在");
+        }
         // 查询数据库
         try {
-
-
             List<Consult> consultList = iConsultMapper.selectList(
                     new LambdaQueryWrapper<Consult>()
-                            .eq(Consult::getConsultExpertUuid, userUuid)
+                            .eq(Consult::getConsultExpertUuid, expert.getExpertUuid())
 
             );
             if (consultList.isEmpty()) {

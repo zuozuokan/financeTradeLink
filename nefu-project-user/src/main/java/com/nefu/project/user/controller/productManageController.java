@@ -153,6 +153,17 @@ public class productManageController {
         return HttpResult.success(product);
     }
 
+    @Operation(summary = "更新商品状态")
+    @PostMapping("update-status")
+    public HttpResult updateProductStatus(@RequestParam String productUuid, @RequestParam String status) {
+        Product product = IProductManageService.selectProductByUuid(productUuid);
+        if (product == null) {
+            throw new ProductManagerException("未查找到该商品信息，请检查是否存在该商品");
+        }
+        product.setProductStatus(status);
+        IProductManageService.updateProducts(product);
+        return HttpResult.success("商品状态更新成功");
+    }
 
 
 }

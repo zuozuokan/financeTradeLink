@@ -24,6 +24,7 @@ public class NewKnowledgeImpl implements INewKnowledgeService {
         queryKnowledge.setKnowledgeContent(knowledge.getKnowledgeContent());
         queryKnowledge.setKnowledgeCategory(knowledge.getKnowledgeCategory());
         queryKnowledge.setKnowledgeStatus(knowledge.getKnowledgeStatus());
+        queryKnowledge.setKnowledgeIsTop(knowledge.getKnowledgeIsTop());
         int update = iNewKnowledgeMapper.update(queryKnowledge, lambdaQueryWrapper);
         if (update > 0) {
             return true;

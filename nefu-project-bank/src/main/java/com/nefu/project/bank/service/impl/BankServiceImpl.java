@@ -36,6 +36,7 @@ public class BankServiceImpl implements IBankService {
      */
     @Override
     public boolean checkLoan(String loanUuid,String BankAdvice) {
+
         LambdaUpdateWrapper<LoanApplication> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(LoanApplication::getLoanApplicationUuid,loanUuid)
                 .set(LoanApplication::getLoanApplicationStatus,BankAdvice);

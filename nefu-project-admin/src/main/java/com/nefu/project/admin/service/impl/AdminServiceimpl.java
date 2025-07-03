@@ -1,16 +1,19 @@
 package com.nefu.project.admin.service.impl;
 
 import cn.hutool.crypto.SmUtil;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nefu.project.admin.dto.PageResult;
 import com.nefu.project.admin.mapper.*;
 import com.nefu.project.admin.service.IAdminService;
 import com.nefu.project.common.exception.Expert.ExpertException;
-import com.nefu.project.common.exception.user.AdminException;
-import com.nefu.project.common.exception.user.DbException;
-import com.nefu.project.common.exception.user.UserException;
-import com.nefu.project.common.exception.user.UserRegistryException;
+import com.nefu.project.common.exception.user.*;
+import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.Knowledge;
 import com.nefu.project.domain.entity.LoanApplication;
@@ -22,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -67,6 +67,83 @@ public class AdminServiceimpl implements IAdminService {
         }
 
         return false;
+    }
+
+
+    /**
+     * description 获取所有的融资申请表
+     *
+     * @params [userUuid]
+     * @return java.util.List<com.nefu.project.domain.entity.LoanApplication>
+     */
+    @Override
+    public PageResult<LoanApplication> loanList(Map<String, Object> params) {
+        // 提取分页参数
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page").toString()) : 1;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size").toString()) : 10;
+
+        // 构建查询条件
+        LambdaQueryWrapper<LoanApplication> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 申请人姓名筛选
+        if (params.containsKey("applicantName") && params.get("applicantName") != null) {
+            String applicantName = params.get("applicantName").toString();
+
+            List<User> users = iUserMapper.selectList(
+                    new LambdaQueryWrapper<User>()
+                            .select(User::getUserUuid)
+                            .like(User::getUserName, applicantName)
+            );
+            if(users.size() == 0){
+                throw new LoanApplicationException("无相关记录");
+            }
+            for (User user : users) {
+                String userUuid = user.getUserUuid();
+
+                queryWrapper.or(wrapper -> wrapper.eq(LoanApplication::getLoanApplicationUserUuid, userUuid));
+            }
+
+        }
+
+        // 状态筛选
+        if (params.containsKey("status") && params.get("status") != null) {
+            String status = params.get("status").toString();
+            queryWrapper.eq(LoanApplication::getLoanApplicationStatus, status);
+        }
+
+        // 日期范围筛选
+        // 从参数中获取日期范围
+        if (params.containsKey("dateRange") && params.get("dateRange") != null) {
+            String[] dateRange = params.get("dateRange").toString().split(",");
+            if (dateRange.length == 2) {
+
+                String startDate = dateRange[0].replaceAll("\\[|\\]", "").trim();
+                String endDate = dateRange[1].replaceAll("\\[|\\]", "").trim();
+
+                startDate = startDate + " 00:00:00";
+                endDate = endDate + " 23:59:59";
+
+
+                queryWrapper.between(LoanApplication::getLoanApplicationCreatedTime, startDate, endDate);
+            }
+        }
+
+        // 分页查询
+        try {
+            IPage<LoanApplication> pageData = new Page<>(page, size);
+            iLoanApplicationMapper.customSelectPage(pageData, queryWrapper);
+
+            PageResult<LoanApplication> result = new PageResult<>();
+            result.setResults(pageData.getRecords());
+            result.setTotal(pageData.getTotal());
+            result.setCurrentPage(pageData.getCurrent());
+            result.setPageSize(pageData.getSize());
+
+            return result;
+        } catch (Exception e) {
+            log.error("获取融资申请列表失败", e);
+            throw new DbException("数据库操作异常");
+        }
     }
 
     /**

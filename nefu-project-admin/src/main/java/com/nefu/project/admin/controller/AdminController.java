@@ -1,5 +1,7 @@
 package com.nefu.project.admin.controller;
 
+
+import com.nefu.project.admin.dto.PageResult;
 import com.nefu.project.admin.job.ScheduledDeletionConfig;
 import com.nefu.project.admin.job.UserDelayedTaskJob;
 import com.nefu.project.admin.service.IAdminService;
@@ -7,6 +9,7 @@ import com.nefu.project.admin.service.impl.AdminServiceimpl;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.Knowledge;
+import com.nefu.project.domain.entity.LoanApplication;
 import com.nefu.project.domain.entity.User;
 import io.swagger.v3.oas.annotations.OpenAPI31;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +55,13 @@ public class AdminController {
             return HttpResult.success("专家该账户注册成功");
         }
         return HttpResult.failed("专家该账户注册失败");
+    }
+    @SneakyThrows
+    @Operation(summary = "查看所有融资申请（带分页筛选）")
+    @PostMapping("/loanList")
+    public HttpResult<PageResult<LoanApplication>> loanList(@RequestBody Map<String, Object> params){
+        PageResult<LoanApplication> loanList = iAdminService.loanList(params);
+        return HttpResult.success(loanList);
     }
 
     @SneakyThrows
@@ -138,7 +148,7 @@ public class AdminController {
     }
     @SneakyThrows
     @Operation(summary = "更新专家信息的状态")
-    @GetMapping("/update-experts-info")
+    @PostMapping("/update-experts-info")
     public HttpResult findAllExpertsinfo(String userUuid,String expertUuid){
         iAdminService.updateExpertStatus(userUuid,expertUuid);
         return HttpResult.success("更新专家信息成功");

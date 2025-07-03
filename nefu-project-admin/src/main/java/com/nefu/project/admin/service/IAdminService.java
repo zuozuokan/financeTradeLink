@@ -1,10 +1,14 @@
 package com.nefu.project.admin.service;
 
+
+import com.nefu.project.admin.dto.PageResult;
 import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.domain.entity.Knowledge;
+import com.nefu.project.domain.entity.LoanApplication;
 import com.nefu.project.domain.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAdminService {
 
@@ -22,7 +26,7 @@ public interface IAdminService {
      * @return: boolean
      */
     boolean checkLoan(String loanUuid,String adminAdvice);
-
+    PageResult<LoanApplication> loanList(Map<String, Object> params);
     /**
      * @description: 添加知识库（内容管理）
      * @param: [knowledge]

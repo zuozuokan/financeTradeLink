@@ -443,6 +443,26 @@ public class ConsultImpl implements IConsultService {
         return request;
     }
     /**
+     * description 获取自己的专家信息
+     *
+     * @params [expertUuid]
+     * @return com.nefu.project.domain.entity.Expert
+     */
+    @Override
+    public Expert getExpert(String expertUserUuid) {
+        // 参数校验
+        stringIsExist(expertUserUuid, "专家ID为空");
+        // 查询数据库
+        Expert expert = iExpertMapper.selectOne(
+                new LambdaQueryWrapper<Expert>()
+                        .eq(Expert::getExpertUserUuid,expertUserUuid)
+        );
+        if (Objects.isNull(expert)) {
+            throw new ExpertException("该专家信息不存在");
+        }
+        return expert;
+    }
+    /**
      * 检查字符串是否存在（非空）
      */
     private void stringIsExist(String str, String message) {

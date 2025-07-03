@@ -2,6 +2,7 @@ package com.nefu.project.user.service;
 
 
 import com.nefu.project.domain.entity.Consult;
+import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.user.dto.ConsultRequest;
 import com.nefu.project.user.dto.ExpertRequest;
 
@@ -15,4 +16,5 @@ public interface IConsultService {
    List<ConsultRequest> getConsultListByUserUuid(String userUuid);
    ConsultRequest getConsultByConsultUuid(String consultUuid);
    List<ExpertRequest> getExpertListByUserUuid(String userUuid);
+   Expert getExpert(String expertUserUuid);
 }

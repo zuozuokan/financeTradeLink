@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nefu.project.common.result.HttpResult;
+import com.nefu.project.common.util.JwtUtil;
 import com.nefu.project.domain.entity.Order;
 
 
@@ -48,21 +49,11 @@ public class OrderManagerController {
 
     @Operation(summary = "获取用户订单详情")
     @GetMapping("my")
-    public HttpResult getAllOrdersByToken(String userUuid){
-        //@RequestParam String token
+    public HttpResult getAllOrdersByToken(@RequestHeader("token") String token) {
+        String userUuid = JwtUtil.getUuidFromToken(token);
            List<Order> orders = new ArrayList<>();
         try
         {
-            /**
-             *
-             *   // 1. 解析 token，获取 uuid
-             *             Algorithm algorithm = Algorithm.HMAC256("project_11_group"); // 替换为你的实际 SALT
-             *             JWTVerifier verifier = JWT.require(algorithm).build();
-             *             DecodedJWT jwt = verifier.verify(token);
-             *             String uuid = jwt.getClaim("uuid").asString();
-             */
-
-            // 2. 查询订单列表（假设 order 表有 order_user_uuid 字段）
           orders   = orderManageService.findByUuid(userUuid);
         }
         catch (Exception e) {

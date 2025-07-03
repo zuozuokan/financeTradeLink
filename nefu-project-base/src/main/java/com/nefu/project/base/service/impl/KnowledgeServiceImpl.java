@@ -26,7 +26,7 @@ public class KnowledgeServiceImpl implements IKnowledgeService {
 
     @Override
     public boolean publish(Knowledge k, String token) {
-        k.setKnowledgeUuid(IdWorker.getIdStr()); // 自动生成19位左右的雪花ID字符串
+        k.setKnowledgeUuid(IdWorker.getIdStr());
         k.setKnowledgeAuthorUuid(JwtUtil.getUuidFromToken(token));
         k.setKnowledgeStatus("pending");
         k.setKnowledgeViews(0);

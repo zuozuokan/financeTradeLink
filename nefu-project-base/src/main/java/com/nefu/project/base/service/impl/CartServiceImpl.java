@@ -254,6 +254,18 @@ public class CartServiceImpl implements ICartService {
     }
 
     /**
+     * @param productUuids
+     */
+    @Override
+    public void refreshCartCache(List<String> productUuids) {
+        if (productUuids == null || productUuids.isEmpty()) {
+            return; // 无商品，直接返回
+        }
+        productCacheService.clearProductCacheBatch(productUuids);
+    }
+
+
+    /**
      * description 判断字符是否有值
      *
      * @params [string, message]
@@ -264,4 +276,8 @@ public class CartServiceImpl implements ICartService {
             throw new LoanApplicationException(message);
         }
     }
+
+
+
+
 }

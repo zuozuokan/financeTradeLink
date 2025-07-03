@@ -80,4 +80,16 @@ public class CartController {
         Cart cart = iCartService.getCart(cartUuid);
         return HttpResult.success(cart);
     }
+
+    @Operation(summary = "刷新商品缓存")
+    @PostMapping("/refresh")
+    public HttpResult<String> refreshCache(@RequestBody List<Cart> cartList) {
+        // 这里可以添加刷新缓存的逻辑
+        iCartService.refreshCartCache(cartList.stream()
+                .map(Cart::getCartProductUuid)
+                .toList());
+        // 例如调用某个服务或方法来刷新缓存
+        return HttpResult.success("商品缓存已刷新");
+    }
+
 }

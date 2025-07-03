@@ -68,37 +68,38 @@ public class productManageController {
 
     @Operation(summary = "添加农产品")
     @PostMapping("addProduct")
-    public HttpResult addProduct(@RequestBody Product product,String userUuid ){
+    public HttpResult addProduct(@RequestBody Product product, String userUuid) {
 
 //         String nCode = stringRedisTemplate.opsForValue().get(product.getProductImageUrl());
 //         product.setProductImageUrl(nCode);
-        if(!IProductManageService.addProducts(product,userUuid))
-        {
+        if (!IProductManageService.addProducts(product, userUuid)) {
             throw new ProductManagerException("添加失败");
         }
 
         return HttpResult.success(product);
 
     }
+
     @Operation(summary = "获取农产品")
     @GetMapping("{productUuid}")
-    public HttpResult getProductByUuid( @PathVariable("productUuid") String uuid){
-  //      log.info("getProductByUuid:{}",uuid);
+    public HttpResult getProductByUuid(@PathVariable("productUuid") String uuid) {
+        //      log.info("getProductByUuid:{}",uuid);
         Product product = IProductManageService.selectProductByUuid(uuid);
-      //  log.info("商品:{}",product);
-        if(product == null){
+        //  log.info("商品:{}",product);
+        if (product == null) {
             throw new ProductManagerException("未查找到该商品的相关信息，请检查输入信息是否有误");
-        } else if (product.getProductStock()==0) {
+        } else if (product.getProductStock() == 0) {
             throw new ProductManagerException("该商品库存为0");
         }
         return HttpResult.success(product);
     }
+
     @Operation(summary = "根据种类获取商品")
     @GetMapping("category")
-    public HttpResult selectAllProductByCategory(String category){
+    public HttpResult selectAllProductByCategory(String category) {
 //        log.info("selectAllProductByCategory:{}",category);
         List<Product> products = IProductManageService.selectAllProductByCategory(category);
-        if(products == null || products.isEmpty()){//返回空列表是empty
+        if (products == null || products.isEmpty()) {//返回空列表是empty
             return HttpResult.failed("该种类商品为空");
         }
         return HttpResult.success(products);
@@ -106,9 +107,9 @@ public class productManageController {
 
     @Operation(summary = "根据种类和uuid获取商品")
     @GetMapping("uuid-category")
-    public HttpResult selectAllProductByUuidAndCategory(String uuid,String category){
-        List<Product> products = IProductManageService.selectAllProductByUuidAndCategory(uuid,category);
-        if(products == null || products.isEmpty()){//返回空列表是empty
+    public HttpResult selectAllProductByUuidAndCategory(String uuid, String category) {
+        List<Product> products = IProductManageService.selectAllProductByUuidAndCategory(uuid, category);
+        if (products == null || products.isEmpty()) {//返回空列表是empty
             return HttpResult.failed("该种类暂未发布商品");
         }
         return HttpResult.success(products);
@@ -117,20 +118,20 @@ public class productManageController {
 
     @Operation(summary = "获取所有农产品列表")
     @GetMapping("list")
-    public HttpResult listProduct(){
+    public HttpResult listProduct() {
         List<Product> products = IProductManageService.selectAllProduct();
-        if(products.isEmpty()) {
-        //   throw  new ProductManagerException("蔬菜销售完毕，库存为空");
-           return HttpResult.success("蔬菜为空");
+        if (products.isEmpty()) {
+            //   throw  new ProductManagerException("蔬菜销售完毕，库存为空");
+            return HttpResult.success("蔬菜为空");
         }
         return HttpResult.success(products);
     }
 
     @Operation(summary = "根据用户uuid获取农产品列表")
     @GetMapping("listby-uuid")
-    public HttpResult listProductByuuid(String userUuid){
+    public HttpResult listProductByuuid(String userUuid) {
         List<Product> products = IProductManageService.selectAllProductByuuid(userUuid);
-        if(products == null || products.isEmpty()){
+        if (products == null || products.isEmpty()) {
             return HttpResult.failed("该用户暂未发布商品");
         }
         return HttpResult.success(products);
@@ -139,16 +140,15 @@ public class productManageController {
     @Operation(summary = "删除/下架商品")
 //    hahah
     @PostMapping("delete")
-    public HttpResult deleteProduct(String productUuid){
-        if( IProductManageService.deleteProductByUuid(productUuid)) {
+    public HttpResult deleteProduct(String productUuid) {
+        if (IProductManageService.deleteProductByUuid(productUuid)) {
             return HttpResult.success("删除成功");
-        }
-        else return  HttpResult.failed("删除失败");
+        } else return HttpResult.failed("删除失败");
     }
 
     @Operation(summary = "更新商品")
     @PostMapping("update")
-    public HttpResult updateProduct(@RequestBody Product product){
+    public HttpResult updateProduct(@RequestBody Product product) {
         IProductManageService.updateProducts(product);
         return HttpResult.success(product);
     }
@@ -164,6 +164,5 @@ public class productManageController {
         IProductManageService.updateProducts(product);
         return HttpResult.success("商品状态更新成功");
     }
-
 
 }

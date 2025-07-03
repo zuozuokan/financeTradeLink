@@ -6,6 +6,7 @@ import com.nefu.project.base.service.INewKnowledgeService;
 import com.nefu.project.common.result.HttpResult;
 import com.nefu.project.domain.entity.Knowledge;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +60,23 @@ public class KnowledgeController {
     }
 
     @Operation(summary = "点赞知识")
-    @PostMapping("/like/{uuid}")
-    public HttpResult<String> like(@PathVariable String uuid) {
-        return service.like(uuid)
+    @PostMapping("/like")
+    public HttpResult<String> like(@RequestParam String knowledgeUuid) {
+        return service.like(knowledgeUuid)
                 ? HttpResult.success("点赞成功")
                 : HttpResult.failed("点赞失败");
+    }
+    @Operation(summary = "增加浏览量")
+    @PostMapping("/view")
+    public HttpResult<String> view(@RequestParam String knowledgeUuid) {
+        return service.view(knowledgeUuid)
+                ? HttpResult.success("浏览加载成功")
+                : HttpResult.failed("浏览加载失败");
+    }
+    @Operation(summary = "获取自己发布知识的列表")
+    @PostMapping("/getKnowledgeByUserUuid")
+    public HttpResult<Page<Knowledge>> getKnowledgeByUserUuid(@RequestParam String userUuid) {
+        return HttpResult.success(service.getKnowledgeByUserUuid(userUuid));
     }
 
 
@@ -76,4 +89,6 @@ public class KnowledgeController {
         }
         return HttpResult.failed("更新失败");
     }
+
+
 }

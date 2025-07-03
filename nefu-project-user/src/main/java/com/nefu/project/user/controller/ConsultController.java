@@ -5,6 +5,7 @@ package com.nefu.project.user.controller;
 import com.nefu.project.common.result.HttpResult;
 
 import com.nefu.project.domain.entity.Consult;
+import com.nefu.project.domain.entity.Expert;
 import com.nefu.project.user.dto.ConsultRequest;
 import com.nefu.project.user.dto.ExpertRequest;
 import com.nefu.project.user.service.IConsultService;
@@ -103,5 +104,13 @@ public class ConsultController {
     public HttpResult<List<ExpertRequest>> getExpertInfo(@RequestParam String userUuid) {
         List<ExpertRequest> consultList = iConsultService.getExpertListByUserUuid(userUuid);
         return HttpResult.success(consultList);
+    }
+    /**
+     * 获取专家详情
+     */
+    @Operation(summary = "获取专家详情")
+    @GetMapping("expert-info")
+    public HttpResult<Expert> getExpert(@RequestParam("expertUserUuid") String expertUserUuid) {
+        return HttpResult.success(iConsultService.getExpert(expertUserUuid));
     }
 }
